@@ -28,11 +28,6 @@ void CollisionManager::AddTrigger(CollisionTrigger* trigger) {
 	triggers.push_front(trigger);
 }
 
-int sign(float f) {
-	if (f<0) return -1;
-	else return 1;
-}
-
 void CollisionManager::UpdateGrid() {
 	for (int i=0; i<width; i++) {
 		for (int j=0; j<height; j++) {

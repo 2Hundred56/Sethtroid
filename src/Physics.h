@@ -33,6 +33,7 @@ bool operator <(Vector v1, Vector v2);
 
 Vector operator *(Vector v, float f);
 
+Vector& operator+= (Vector& orig, Vector add);
 
 float proj(Vector v, Vector axis);
 
@@ -80,7 +81,7 @@ public:
 		return Vector(min, max);
 	}
 	Rect ContainBox(Vector pos) {
-		return Rect(pos.x-hw, pos.y-hh, pos.x+hw, pos.y+hh);
+		return Rect(pos.x-hw, pos.y-hh, hw*2, hh*2);
 	}
 };
 
@@ -97,12 +98,17 @@ public:
 	Shape* shape;
 };
 
+int sign(float f);
+
 struct Collision {
 	CollisionInfo otherInfo;
 	Vector normal;
 	Vector otherPos;
 	int otherFlag;
 	Collision(CollisionInfo info, Vector n, Vector op, int f) : otherInfo(info), normal(n), otherPos(n), otherFlag(f) {
+
+	}
+	Collision() {
 
 	}
 };

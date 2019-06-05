@@ -13,6 +13,7 @@ Sprite::Sprite(int w, int h) {
 	for(int i = 0; i < w; ++i) data[i] = new char[h];
 	width=w;
 	height=h;
+	x=0;
 }
 
 Sprite::~Sprite() {

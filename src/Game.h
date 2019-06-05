@@ -9,7 +9,8 @@
 #define GAME_H_
 #include "SDLInterface.h"
 #include "CollisionManager.h"
-#include "ThreeBy3.h"
+#include "GameObject.h"
+class GameObject;
 class Game {
 public:
 	Game();
@@ -17,13 +18,10 @@ public:
 	int Initialize();
 	bool Update();
 	void Close();
-protected:
 	SDLInterface* interface;
 	CollisionManager* manager;
-	ThreeBy3* t3;
-	Tileset* tileset;
-	TileLayer* layer;
-	Sprite* sprite;
+protected:
+	std::forward_list<GameObject*> gameObjects;
 
 };
 

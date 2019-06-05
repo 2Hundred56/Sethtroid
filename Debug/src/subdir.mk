@@ -7,9 +7,9 @@ CPP_SRCS += \
 ../src/CollisionManager.cpp \
 ../src/Game.cpp \
 ../src/Physics.cpp \
+../src/PhysicsObject.cpp \
 ../src/SDLInterface.cpp \
 ../src/Sprite.cpp \
-../src/ThreeBy3.cpp \
 ../src/Tile.cpp \
 ../src/TileLayer.cpp \
 ../src/Tileset.cpp \
@@ -19,9 +19,9 @@ OBJS += \
 ./src/CollisionManager.o \
 ./src/Game.o \
 ./src/Physics.o \
+./src/PhysicsObject.o \
 ./src/SDLInterface.o \
 ./src/Sprite.o \
-./src/ThreeBy3.o \
 ./src/Tile.o \
 ./src/TileLayer.o \
 ./src/Tileset.o \
@@ -31,9 +31,9 @@ CPP_DEPS += \
 ./src/CollisionManager.d \
 ./src/Game.d \
 ./src/Physics.d \
+./src/PhysicsObject.d \
 ./src/SDLInterface.d \
 ./src/Sprite.d \
-./src/ThreeBy3.d \
 ./src/Tile.d \
 ./src/TileLayer.d \
 ./src/Tileset.d \

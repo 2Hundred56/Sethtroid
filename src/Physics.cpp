@@ -32,6 +32,19 @@ Vector operator -(Vector v1, Vector v2) {
 Vector operator +(Vector v1, Vector v2) {
 	return Vector(v1.x+v2.x, v1.y+v2.y);
 }
+
+Vector& operator +=(Vector& orig, Vector add) {
+	orig = Vector(orig.x+add.x, orig.y+add.y);
+}
+
+int sign(float f) {
+	if (f < 0)
+		return -1;
+	else if (f > 0)
+		return 1;
+	else
+		return 0;
+}
 /*
  * Physics.cpp
  *

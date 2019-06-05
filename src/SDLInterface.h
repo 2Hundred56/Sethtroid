@@ -21,7 +21,9 @@ public:
 	virtual void UpdateGraphics();
 	virtual void BlitSprite(Sprite* sprite, int x, int y);
 	virtual void BlitLayer(Layer*, int offsetx=0, int offsety=0);
+	virtual Sprite* loadImage(char*);
 	virtual Sprite* loadSprite(char*);
+	void exportSprite(char* path, Sprite* sprite);
 protected:
 	SDL_Texture* screenTexture;
 	SDL_Renderer* renderer;

@@ -7,6 +7,7 @@
 
 #include "SDLInterface.h"
 #include <iostream>
+#include <fstream>
 const int SCREEN_WIDTH = 720;
 const int SCREEN_HEIGHT = 512;
 unsigned int getpixel(SDL_Surface *surface, int x, int y)
@@ -105,7 +106,7 @@ void SDLInterface::BlitLayer(Layer* layer, int ox, int oy) {
 		}
 	}
 }
-Sprite* SDLInterface::loadSprite(char* path) {
+Sprite* SDLInterface::loadImage(char* path) {
 	SDL_Surface* surface = SDL_LoadBMP(path);
 	SDL_LockSurface(surface);
 	Sprite* output = new Sprite(surface->w, surface->h);
@@ -131,4 +132,40 @@ Sprite* SDLInterface::loadSprite(char* path) {
 	}
 
 	return output;
+}
+
+Sprite* SDLInterface::loadSprite(char* path) {
+	char header[4];
+	char palette[2];
+	char data[1];
+	std::ifstream file (path, std::ios::in | std::ios::binary);
+	file.read (header, 4);
+	Sprite* output = new Sprite(header[1], header[2]);
+	for (int i = 0; i<header[3]; i++) {
+		file.read (palette, 2);
+		output->SetPalette(i, palette[0]*256+palette[1]);
+	}
+	for (int i = 0; i<header[1]; i++) {
+		for (int j = 0; j<header[2]; j++) {
+			file.read(data, 1);
+			output->SetPixel(i, j, data[0]);
+		}
+	}
+}
+
+void SDLInterface::exportSprite(char* path, Sprite* sprite) {
+	char header[4];
+	header[0]=0;
+	header[1]=sprite->GetWidth();
+	header[2]=sprite->GetHeight();
+	header[3]=sprite->x;
+	char data[header[1]*header[2]];
+	for (int i = 0; i<header[1]; i++) {
+		for (int j = 0; j<header[2]; j++) {
+			data[j*header[1]+i]=sprite->GetData(i, j);
+		}
+	}
+	std::ofstream file (path, std::ios::out | std::ios::binary);
+	file.write(header, 4);
+	file.write(data, header[1]*header[2]);
 }
