@@ -7,7 +7,7 @@
 
 #include "Player.h"
 
-Player::Player(Game* game) : PhysicsObject(game), SpritedObject(game) {
+Player::Player() : PhysicsObject(), SpritedObject() {
 
 }
 

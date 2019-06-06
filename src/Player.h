@@ -18,7 +18,7 @@ enum State {
 
 class Player: public PhysicsObject, public SpritedObject {
 public:
-	Player(Game* game);
+	Player();
 	virtual void GeneralUpdate();
 	virtual ~Player();
 	bool grounded=false;

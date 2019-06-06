@@ -12,7 +12,7 @@
 
 class SpritedObject: public GameObject {
 public:
-	SpritedObject(Game* game);
+	SpritedObject();
 	virtual ~SpritedObject();
 	virtual void Render();
 protected:

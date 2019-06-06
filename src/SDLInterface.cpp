@@ -158,7 +158,7 @@ void SDLInterface::exportSprite(char* path, Sprite* sprite) {
 	header[0]=0;
 	header[1]=sprite->GetWidth();
 	header[2]=sprite->GetHeight();
-	header[3]=sprite->x;
+	header[3]=sprite->numPalettes;
 	char data[header[1]*header[2]];
 	for (int i = 0; i<header[1]; i++) {
 		for (int j = 0; j<header[2]; j++) {
@@ -170,7 +170,7 @@ void SDLInterface::exportSprite(char* path, Sprite* sprite) {
 	file.write(data, header[1]*header[2]);
 }
 
-Animation* SDLInterface::importAnimation(char* path, std::forward_list<int> widths, int interval) {
+Animation* SDLInterface::ImportAnimation(char* path, std::forward_list<int> widths, int interval) {
 	SDL_Surface* surface = SDL_LoadBMP(path);
 	SDL_LockSurface(surface);
 	Animation* anim = new Animation();

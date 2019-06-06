@@ -1,3 +1,5 @@
+#ifndef SPRITE_H_
+#define SPRITE_H_
 class Sprite {
 public:
 	Sprite(int, int);
@@ -13,10 +15,9 @@ public:
 	char GetData(int i, int j) {return data[i][j];}
 	bool HFLIPPED=false;
 	char** data;
-protected:
 	int width, height;
 	unsigned int* palettes;
 	int numPalettes = 0;
 
-
 };
+#endif /* SPRITE_H_ */

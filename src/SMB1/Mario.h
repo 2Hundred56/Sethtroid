@@ -7,7 +7,7 @@
 
 #ifndef SMB1_MARIO_H_
 #define SMB1_MARIO_H_
-#include "Player.h"
+#include "../Player.h"
 namespace SMB1 {
 
 class Mario: public Player {

@@ -10,7 +10,7 @@
 
 namespace SMB1 {
 
-Mario::Mario() {
+Mario::Mario() : Player(){
 	// TODO Auto-generated constructor stub
 
 }

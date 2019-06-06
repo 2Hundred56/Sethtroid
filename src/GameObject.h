@@ -11,8 +11,7 @@
 class Game;
 class GameObject {
 public:
-	GameObject(Game* game) {
-		this->game=game;
+	GameObject() {
 	}
 	virtual ~GameObject() {
 
@@ -36,8 +35,7 @@ public:
 
 	}
 protected:
-	const Game* game;
 	Vector pos;
 };
-
+static Game* game;
 #endif /* GAMEOBJECT_H_ */

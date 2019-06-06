@@ -13,7 +13,7 @@
 
 class PhysicsObject: public GameObject {
 public:
-	PhysicsObject(Game* game);
+	PhysicsObject();
 	virtual ~PhysicsObject();
 	virtual void InitialUpdate();
 	virtual void CollisionPoll();

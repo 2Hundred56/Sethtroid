@@ -7,7 +7,7 @@
 
 #include "SpritedObject.h"
 
-SpritedObject::SpritedObject(Game* game) : GameObject(game) {
+SpritedObject::SpritedObject() : GameObject() {
 	// TODO Auto-generated constructor stub
 
 }

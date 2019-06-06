@@ -8,7 +8,7 @@
 #include "PhysicsObject.h"
 #include <cmath>
 
-PhysicsObject::PhysicsObject(Game* game) : GameObject(game){
+PhysicsObject::PhysicsObject(): GameObject(){
 
 }
 

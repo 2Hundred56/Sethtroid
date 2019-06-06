@@ -25,12 +25,17 @@ public:
 	virtual Sprite* loadImage(char*);
 	virtual Sprite* loadSprite(char*);
 	void exportSprite(char* path, Sprite* sprite);
+	float horizInput;
+	bool isJumping;
+	bool isRunning;
+	void WriteAnimation(char* path, Animation* animation);
+	Animation* ImportAnimation(char* path, std::forward_list<int> widths, int interval);
 protected:
 	SDL_Texture* screenTexture;
 	SDL_Renderer* renderer;
 	SDL_Window* window;
 	unsigned int * pixels;
-	float horizInput;
+
 };
 
 #endif /* SDLINTERFACE_H_ */

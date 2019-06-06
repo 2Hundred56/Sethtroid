@@ -19,13 +19,15 @@ struct Frame {
 };
 class Animation: public Sprite {
 public:
-	Animation();
-	virtual ~Animation();
-	void Advance(int);
-	void GetWidth() {
+	Animation() : Sprite(0, 0){
+	}
+	virtual ~Animation() {
+
+	}
+	int GetWidth() {
 		return frames[index].w;
 	}
-	void GetHeight() {
+	int GetHeight() {
 		return frames[index].h;
 	}
 	unsigned int PixelAt(int x, int y) {
@@ -54,10 +56,10 @@ public:
 			if (index>=numFrames) index=0;
 		}
 	}
-	float interval = 1;
-protected:
-	Frame* frames;
+	int interval = 1;
 	int index = 0;
+	Frame* frames;
+
 	int numFrames = 0;
 
 };
