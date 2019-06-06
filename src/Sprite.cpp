@@ -20,7 +20,12 @@ Sprite::~Sprite() {
 
 }
 unsigned int Sprite::PixelAt(int x, int y) {
-	return palettes[data[x][y]];
+	if (!HFLIPPED) {
+		return palettes[data[x][y]];
+	}
+	else {
+		return palettes[data[width-x-1][y]];
+	}
 }
 
 void Sprite::FillBlack() {

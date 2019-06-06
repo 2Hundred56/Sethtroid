@@ -5,16 +5,18 @@ public:
 	void FillBlack();
 	unsigned int PixelAt(int x, int y);
 	void CopyData(Sprite*);
-	int GetHeight() const { return height; }
-	int GetWidth() const { return width; }
+	virtual int GetHeight() const { return height; }
+	virtual int GetWidth() const { return width; }
 	int GetPalette(int i) const { return palettes[i]; }
-	void SetPalette(int i, unsigned int pixel) { palettes[i]=pixel; x++;}
+	void SetPalette(int i, unsigned int pixel) { palettes[i]=pixel; if (numPalettes<(i+1)) numPalettes=i+1;}
 	void SetPixel(int i, int j, char k) { data[i][j]=k; }
 	char GetData(int i, int j) {return data[i][j];}
-	int x;
+	bool HFLIPPED=false;
+	char** data;
 protected:
 	int width, height;
 	unsigned int* palettes;
-	char** data;
+	int numPalettes = 0;
+
 
 };

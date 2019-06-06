@@ -16,6 +16,7 @@ Game::~Game() {
 }
 
 int Game::Initialize() {
+	clock=0;
 	interface = new SDLInterface();
 	interface->InitGraphics();
 	manager = new CollisionManager(200,200);
@@ -35,6 +36,7 @@ bool Game::Update() {
 	for (auto it = gameObjects.begin(); it!=gameObjects.end(); it++) (*it)->LateUpdate();
 	for (auto it = gameObjects.begin(); it!=gameObjects.end(); it++) (*it)->Render();
 	interface->UpdateGraphics();
+	clock++;
 	return true;
 }
 

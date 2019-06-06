@@ -169,3 +169,68 @@ void SDLInterface::exportSprite(char* path, Sprite* sprite) {
 	file.write(header, 4);
 	file.write(data, header[1]*header[2]);
 }
+
+Animation* SDLInterface::importAnimation(char* path, std::forward_list<int> widths, int interval) {
+	SDL_Surface* surface = SDL_LoadBMP(path);
+	SDL_LockSurface(surface);
+	Animation* anim = new Animation();
+	anim->interval=interval;
+	int palettesSet=0;
+	int sum = 0;
+	for (auto it = widths.begin(); it!=widths.end(); it++) {
+		Sprite* output = new Sprite(*it, surface->h);
+		for (int i=0; i<output->GetWidth(); i++) {
+			for (int j=0;j<output->GetHeight(); j++) {
+				unsigned int pixel = getpixel(surface, i+sum, j);
+				for (int k=0; k<palettesSet+1; k++) {
+					if (k==palettesSet) {
+						output->SetPalette(k, pixel);
+						output->SetPixel(i, j, k);
+						palettesSet++;
+						break;
+					}
+					else {
+						if (output->GetPalette(k)==pixel) {
+							output->SetPixel(i, j, k);
+							break;
+						}
+					}
+				}
+			}
+		}
+		char** data = output->data;
+		anim->AddFrame(data, output->GetWidth(), output->GetHeight());
+		sum+=*it;
+
+	}
+	return anim;
+}
+void SDLInterface::WriteAnimation(char* path, Animation* animation) {
+	char header[3];
+	char palette[2];
+	char smallHeader[2];
+	header[0]=animation->numFrames;
+	header[1]=animation->interval;
+	header[2]=animation->numPalettes;
+	std::ofstream file (path, std::ios::out | std::ios::binary);
+	file.write(header, 3);
+	for (int i=0; i<animation->numPalettes; i++) {
+		palette[0]=(int) (animation->palettes[i]/256);
+		palette[1]=animation->palettes[i]-palette[0]*256;
+		file.write(palette, 2);
+	}
+	for (int i=0; i<animation->numFrames;i++) {
+		Frame frame = animation->frames[i];
+		smallHeader[0]=frame.w;
+		smallHeader[1]=frame.h;
+		file.write(smallHeader, 2);
+		char data[frame.w*frame.h];
+		for (int i = 0; i<smallHeader[0]; i++) {
+			for (int j = 0; j<smallHeader[1]; j++) {
+				data[j*smallHeader[0]+i]=frame.data[i][j];
+			}
+		}
+		file.write(data, frame.w*frame.h);
+	}
+
+}

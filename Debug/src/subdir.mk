@@ -8,8 +8,10 @@ CPP_SRCS += \
 ../src/Game.cpp \
 ../src/Physics.cpp \
 ../src/PhysicsObject.cpp \
+../src/Player.cpp \
 ../src/SDLInterface.cpp \
 ../src/Sprite.cpp \
+../src/SpritedObject.cpp \
 ../src/Tile.cpp \
 ../src/TileLayer.cpp \
 ../src/Tileset.cpp \
@@ -20,8 +22,10 @@ OBJS += \
 ./src/Game.o \
 ./src/Physics.o \
 ./src/PhysicsObject.o \
+./src/Player.o \
 ./src/SDLInterface.o \
 ./src/Sprite.o \
+./src/SpritedObject.o \
 ./src/Tile.o \
 ./src/TileLayer.o \
 ./src/Tileset.o \
@@ -32,8 +36,10 @@ CPP_DEPS += \
 ./src/Game.d \
 ./src/Physics.d \
 ./src/PhysicsObject.d \
+./src/Player.d \
 ./src/SDLInterface.d \
 ./src/Sprite.d \
+./src/SpritedObject.d \
 ./src/Tile.d \
 ./src/TileLayer.d \
 ./src/Tileset.d \

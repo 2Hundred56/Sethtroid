@@ -20,6 +20,7 @@ public:
 	void Close();
 	SDLInterface* interface;
 	CollisionManager* manager;
+	int clock;
 protected:
 	std::forward_list<GameObject*> gameObjects;
 

@@ -10,6 +10,7 @@
 #include "SDL2/SDL.h"
 #include "Tileset.h"
 #include "Layer.h"
+#include "Animation.h"
 class SDLInterface{
 public:
 	SDLInterface();
@@ -29,6 +30,7 @@ protected:
 	SDL_Renderer* renderer;
 	SDL_Window* window;
 	unsigned int * pixels;
+	float horizInput;
 };
 
 #endif /* SDLINTERFACE_H_ */
