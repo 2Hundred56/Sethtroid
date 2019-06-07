@@ -27,6 +27,12 @@ public:
 			return Vector(0, 0.5625);
 		}
 	}
+	float Friction() {
+		return 0.046875;
+	}
+	float TerminalVel() {
+		return 4.5;
+	}
 	float Accel() {
 		if (IsRunning()) {
 			return 0.054745;
@@ -57,6 +63,7 @@ public:
 		running = new Animation(game->interface->LoadAnim("rsrc/smb1/mario/mario-run.bin"));
 		braking = new Animation(game->interface->LoadAnim("rsrc/smb1/mario/mario-brake.bin"));
 		trigger = new CollisionTrigger(new CollisionInfo(), new AABB(9, 9), FOOT|HIT);
+		current = standing;
 	}
 };
 

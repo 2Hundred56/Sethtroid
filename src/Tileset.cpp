@@ -1,6 +1,6 @@
 #include "Tileset.h"
 
-Tileset::Tileset() : Sprite(5, 5) {
+Tileset::Tileset(int w, int h) : Sprite(w, h) {
 	tiles = new Tile*[16];
 }
 

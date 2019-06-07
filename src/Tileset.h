@@ -11,11 +11,10 @@
 #include "Sprite.h"
 class Tileset : public Sprite{
 public:
-	Tileset();
+	Tileset(int, int);
 	virtual ~Tileset();
 	unsigned int TilePixelAt(int tile, int x, int y);
 	Tile* GetTile(int i) const { return (tiles[i]); }
-protected:
 	Tile** tiles;
 };
 

@@ -11,7 +11,6 @@ CPP_SRCS += \
 ../src/Player.cpp \
 ../src/SDLInterface.cpp \
 ../src/Sprite.cpp \
-../src/SpritedObject.cpp \
 ../src/Tile.cpp \
 ../src/TileLayer.cpp \
 ../src/Tileset.cpp \
@@ -25,7 +24,6 @@ OBJS += \
 ./src/Player.o \
 ./src/SDLInterface.o \
 ./src/Sprite.o \
-./src/SpritedObject.o \
 ./src/Tile.o \
 ./src/TileLayer.o \
 ./src/Tileset.o \
@@ -39,7 +37,6 @@ CPP_DEPS += \
 ./src/Player.d \
 ./src/SDLInterface.d \
 ./src/Sprite.d \
-./src/SpritedObject.d \
 ./src/Tile.d \
 ./src/TileLayer.d \
 ./src/Tileset.d \

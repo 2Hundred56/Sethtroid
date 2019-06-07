@@ -6,7 +6,7 @@
  */
 
 #include "Sprite.h"
-
+#include <iostream>
 Sprite::Sprite(int w, int h) {
 	palettes = new unsigned int[16];
 	data = new char*[w];

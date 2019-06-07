@@ -10,6 +10,7 @@
 
 PhysicsObject::PhysicsObject(Game* game): GameObject(game){
 	trigger=0;
+	displacement = Vector(0, 0);
 }
 
 PhysicsObject::~PhysicsObject() {

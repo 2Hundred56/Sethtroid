@@ -31,7 +31,7 @@ public:
 		return wrapper->GetDataI(index, x, y, HFLIPPED);
 	}
 	void Advance(int t) {
-		if (t%wrapper->interval==0) {
+		if (t%(wrapper->interval)==0) {
 			index++;
 			if (index>=wrapper->NumFrames()) index=0;
 		}

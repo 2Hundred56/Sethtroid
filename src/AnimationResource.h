@@ -34,7 +34,7 @@ public:
 	int GetHeightI(int index) {
 		return frames[index].h;
 	}
-	unsigned int PixelAtI(bool hflip, int index, int x, int y) {
+	unsigned int PixelAtI(int index, int x, int y, bool hflip) {
 		if (!hflip) {
 			return palettes[frames[index].data[x][y]];
 		}

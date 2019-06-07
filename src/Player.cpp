@@ -12,9 +12,14 @@ Player::Player(Game* game) : PhysicsObject(game) {
 }
 
 void Player::GeneralUpdate() {
-	grounded=(displacement.y<0);
+	current->Advance(game->clock);
+	grounded=true;//(displacement.y<0);
 	if (!grounded) {
-		velocity+=Gravity();
+
+		if (velocity.y>-TerminalVel()) {
+			std::cout<<velocity.y;
+			velocity+=Gravity();
+		}
 		if (velocity.y>0) ChangeState(JUMPING);
 		else ChangeState(FALLING);
 	}
@@ -23,6 +28,7 @@ void Player::GeneralUpdate() {
 	}
 	if (game->interface->horizInput<0) {
 		current->HFLIPPED=true;
+
 		if (gsp>0) {
 			if (grounded) gsp-=Decel();
 			else gsp-=AirDecel();
@@ -32,6 +38,9 @@ void Player::GeneralUpdate() {
 			if (grounded) gsp-=Accel();
 			else gsp-=AirAccel();
 			ChangeState(RUNNING);
+		}
+		else {
+			gsp+=Friction();
 		}
 	}
 	else if (game->interface->horizInput>0) {
@@ -46,10 +55,18 @@ void Player::GeneralUpdate() {
 			else gsp+=AirAccel();
 			ChangeState(RUNNING);
 		}
+		else {
+			gsp-=Friction();
+		}
 	}
 	else if (grounded) {
-		ChangeState(STANDING);
+		if (std::abs((int) gsp)>Friction()) gsp-=sign(gsp)*Friction();
+		else gsp=0;
+		if (gsp==0) {
+			ChangeState(STANDING);
+		}
 	}
+	velocity.x=gsp;
 }
 
 Player::~Player() {

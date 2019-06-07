@@ -8,6 +8,7 @@
 #include "SDLInterface.h"
 #include <iostream>
 #include <fstream>
+#include "Tile.h"
 const int SCREEN_WIDTH = 720;
 const int SCREEN_HEIGHT = 512;
 unsigned int getpixel(SDL_Surface *surface, int x, int y)
@@ -57,12 +58,13 @@ int SDLInterface::InitGraphics() {
 	pixels = new unsigned int[SCREEN_WIDTH * SCREEN_HEIGHT];
 	for (int i=0; i<SCREEN_WIDTH; i++) {
 		for (int j=0; j<SCREEN_HEIGHT; j++) {
-			pixels[SCREEN_WIDTH*j+i]=(255<<24)+(127<<16)+(127<<8)+(127);
+			pixels[SCREEN_WIDTH*j+i]=(255<<24);
 		}
 	}
 	return 0;
 }
 void SDLInterface::WritePixel(unsigned int data, int x, int y) {
+	if (x>SCREEN_WIDTH || x<0 || y>SCREEN_HEIGHT || y<0) return;
 	if ((data>>24)==0) return;
 	else {
 		pixels[y*SCREEN_WIDTH+x]=data;
@@ -74,12 +76,25 @@ void SDLInterface::BlitSprite(Sprite* sprite, int x, int y) {
 	}
 	for (int i=0; i<sprite->GetWidth(); ++i) {
 		for (int j=0; j<sprite->GetHeight(); ++j) {
+
 			WritePixel(sprite->PixelAt(i, j), i+x, j+y);
 		}
 	}
 }
 bool SDLInterface::EventPoll() {
 	SDL_Event e;
+	SDL_PumpEvents();
+	const unsigned char* state = SDL_GetKeyboardState(NULL);
+	if (state[SDL_SCANCODE_D]&&!state[SDL_SCANCODE_A]) {
+		horizInput=1;
+	}
+	else if (state[SDL_SCANCODE_A]&&!state[SDL_SCANCODE_D]) {
+		horizInput=-1;
+	}
+	else {
+		horizInput=0;
+	}
+	isRunning=state[SDL_SCANCODE_F];
 	while (SDL_PollEvent(&e)){
 		if (e.type == SDL_QUIT){
 			return false;
@@ -98,6 +113,11 @@ void SDLInterface::UpdateGraphics() {
 	SDL_RenderClear(renderer);
 	SDL_RenderCopy(renderer, screenTexture, NULL, NULL);
 	SDL_RenderPresent(renderer);
+	for (int i=0; i<SCREEN_WIDTH; i++) {
+		for (int j=0; j<SCREEN_HEIGHT; j++) {
+			pixels[SCREEN_WIDTH*j+i]=(255<<24);
+		}
+	}
 }
 void SDLInterface::BlitLayer(Layer* layer, int ox, int oy) {
 	for (int i=0; i<SCREEN_WIDTH; ++i) {
@@ -242,7 +262,21 @@ void SDLInterface::_WriteAnimation(char* path, AnimationResource* animation) {
 	}
 
 }
+struct HexCharStruct
+{
+  unsigned char c;
+  HexCharStruct(unsigned char _c) : c(_c) { }
+};
 
+inline std::ostream& operator<<(std::ostream& o, const HexCharStruct& hs)
+{
+  return (o << std::hex << (int)hs.c);
+}
+
+inline HexCharStruct hex(unsigned char _c)
+{
+  return HexCharStruct(_c);
+}
 AnimationResource* SDLInterface::LoadAnim(char* path) {
 	char header[3];
 	char palette[4];
@@ -250,28 +284,76 @@ AnimationResource* SDLInterface::LoadAnim(char* path) {
 	char buffer[1];
 	char** data;
 	std::string pth = std::string(path);
-	std::map<std::string, AnimationResource*>::iterator it=paths.find(pth);
-	if (it!=paths.end()) return it->second;
+	std::map<std::string, AnimationResource*>::iterator it=anims.find(pth);
+	if (it!=anims.end()) return it->second;
 	AnimationResource* anim = new AnimationResource();
 	std::ifstream file (path, std::ios::in | std::ios::binary);
 	file.read(header, 3);
+	if (header[1]!=1) std::cout<<pth<<(int)header[1]<<"\n"<<std::flush;
+	//std::cout<<"\n"<<(int) header[0]<<" "<<(int) header[1]<<" "<<(int) header[2]<<"\n"<<std::flush;
 	anim->interval=header[1];
 	for (int i=0; i<header[2];i++) {
 		file.read(palette, 4);
 		anim->SetPalette(i, (palette[0]<<24)+(palette[1]<<16)+(palette[2]<<8)+palette[3]);
+		//std::cout<<"\n"<<hex(palette[0])<<" "<<hex(palette[1])<<" "<<hex(palette[2])<<" "<<hex(palette[3])<<"\n"<<std::flush;
+		//std::cout<<"\n"<<(palette[0]<<24)+(palette[1]<<16)+(palette[2]<<8)+palette[3]<<"\n"<<std::flush;
 	}
 	for (int k=0; k<header[0];k++) {
 		file.read(smallHeader, 2);
 		data=new char*[smallHeader[0]];
 		for(int i = 0; i < smallHeader[0]; ++i) data[i] = new char[smallHeader[1]];
-		for (int i = 0; i<smallHeader[0]; i++) {
+		for (int i = 0; i <smallHeader[0]; i++) {
 			for (int j = 0; j<smallHeader[1]; j++) {
 				file.read(buffer, 1);
-				data[i][j]=buffer[0];
+				if (buffer[0]!=0) {
+				}
+				data[j][i]=buffer[0];
 			}
 		}
 		anim->AddFrame(data, smallHeader[0], smallHeader[1]);
 	}
-	paths.insert(std::pair<std::string, AnimationResource*>(pth, anim));
+	anims.insert(std::pair<std::string, AnimationResource*>(pth, anim));
 	return anim;
+}
+
+Tileset* SDLInterface::LoadTileset(char* path) {
+	char header[4];
+	char palette[4];
+	char buffer[1];
+	std::string pth = std::string(path);
+	std::map<std::string, Tileset*>::iterator it=sets.find(pth);
+	if (it!=sets.end()) return it->second;
+	std::ifstream file (path, std::ios::in | std::ios::binary);
+	file.read(header, 4);
+	Tileset* tileset = new Tileset(header[0], header[1]);
+	for (int i=0; i<header[3];i++) {
+		file.read(palette, 4);
+		tileset->SetPalette(i, (palette[0]<<24)+(palette[1]<<16)+(palette[2]<<8)+palette[3]);
+			//std::cout<<"\n"<<hex(palette[0])<<" "<<hex(palette[1])<<" "<<hex(palette[2])<<" "<<hex(palette[3])<<"\n"<<std::flush;
+			//std::cout<<"\n"<<(palette[0]<<24)+(palette[1]<<16)+(palette[2]<<8)+palette[3]<<"\n"<<std::flush;
+	}
+	char** data=new char*[header[0]];
+	for(int i = 0; i < header[0]; ++i) data[i] = new char[header[1]];
+	for (int i = 0; i <header[0]; i++) {
+		for (int j = 0; j<header[1]; j++) {
+			file.read(buffer, 1);
+				if (buffer[0]!=0) {}
+			data[j][i]=buffer[0];
+			}
+	}
+	tileset->data=data;
+	int k=0;
+	for (int i = 0; i<header[0]/header[2]; i++) {
+		for (int j = 0; j<header[1]/header[2]; i++) {
+			file.read(buffer, 1);
+			switch (buffer[0]) {
+			case 0:
+				tileset->tiles[k]=new Tile(i*header[2], j*header[2], new AABB(header[2]/2, header[2]/2), SOLID, new CollisionInfo());
+				k++;
+				break;
+			default: break;
+			}
+		}
+	}
+	return tileset;
 }

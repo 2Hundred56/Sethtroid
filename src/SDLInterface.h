@@ -34,11 +34,13 @@ public:
 	void _WriteAnimation(char* path, AnimationResource* animation);
 	AnimationResource* _ImportAnimation(char* path, std::forward_list<int> widths, int interval);
 	AnimationResource* LoadAnim(char* path);
+	Tileset* LoadTileset(char* path);
 protected:
 	SDL_Texture* screenTexture;
 	SDL_Renderer* renderer;
 	SDL_Window* window;
-	std::map<std::string, AnimationResource*> paths;
+	std::map<std::string, AnimationResource*> anims;
+	std::map<std::string, Tileset*> sets;
 	unsigned int * pixels;
 
 };

@@ -1,3 +1,5 @@
+#ifndef TILE_LAYER_H_
+#define TILE_LAYER_H_
 #include "Tileset.h"
 #include "Layer.h"
 class TileLayer : public Layer {
@@ -25,3 +27,4 @@ protected:
 	char** tilesetData;
 	int width, height;
 };
+#endif

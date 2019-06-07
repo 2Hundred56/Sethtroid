@@ -9,7 +9,6 @@
 #define PLAYER_H_
 
 #include "PhysicsObject.h"
-#include "SpritedObject.h"
 #include "Animation.h"
 
 enum State {
@@ -28,12 +27,15 @@ public:
 	virtual float TopSpeed() = 0;
 	virtual float AirAccel() = 0;
 	virtual float AirDecel() = 0;
+	virtual float Friction() = 0;
 	virtual void Render() {
 		Vector choice = pos-Vector(current->GetWidth()/2.0, current->GetHeight()/2.0);
 		game->interface->BlitSprite(current, (int) choice.x, (int) choice.y);
 	}
+	virtual float TerminalVel() = 0;
 	void ChangeState(State newState) {
 		if (state==newState) return;
+		state=newState;
 		Animation* anim;
 		switch (state) {
 			case STANDING:
