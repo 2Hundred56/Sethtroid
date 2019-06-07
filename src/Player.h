@@ -16,9 +16,9 @@ enum State {
 	STANDING, RUNNING, BRAKING, JUMPING, FALLING
 };
 
-class Player: public PhysicsObject, public SpritedObject {
+class Player: public PhysicsObject {
 public:
-	Player();
+	Player(Game* game);
 	virtual void GeneralUpdate();
 	virtual ~Player();
 	bool grounded=false;
@@ -28,6 +28,10 @@ public:
 	virtual float TopSpeed() = 0;
 	virtual float AirAccel() = 0;
 	virtual float AirDecel() = 0;
+	virtual void Render() {
+		Vector choice = pos-Vector(current->GetWidth()/2.0, current->GetHeight()/2.0);
+		game->interface->BlitSprite(current, (int) choice.x, (int) choice.y);
+	}
 	void ChangeState(State newState) {
 		if (state==newState) return;
 		Animation* anim;
@@ -56,12 +60,12 @@ public:
 	}
 	float gsp = 0;
 protected:
-	Animation* standing;
-	Animation* running;
-	Animation* braking;
-	Animation* jumping;
-	Animation* falling;
-	Animation* current;
+	Animation* standing = NULL;
+	Animation* running = NULL;
+	Animation* braking = NULL;
+	Animation* jumping = NULL;
+	Animation* falling = NULL;
+	Animation* current = NULL;
 	State state = STANDING;
 };
 

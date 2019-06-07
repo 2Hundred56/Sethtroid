@@ -12,32 +12,33 @@
 #include "AnimationResource.h"
 class Animation: public Sprite {
 public:
-	Animation() : Sprite(0, 0){
+	Animation(AnimationResource* res) : Sprite(0, 0), wrapper(res){
 
 	}
 	virtual ~Animation() {
 
 	}
-	int GetWidth() {
-		return wrapper->GetWidth(index);
+	int GetWidth() const {
+		return wrapper->GetWidthI(index);
 	}
-	int GetHeight() {
-		return wrapper->GetHeight(index);
+	int GetHeight() const {
+		return wrapper->GetHeightI(index);
 	}
 	unsigned int PixelAt(int x, int y) {
-		return wrapper->PixelAt(index, x, y);
+		return wrapper->PixelAtI(index, x, y, HFLIPPED);
 	}
 	char GetData(int x, int y) {
-		return wrapper->GetData(index, x, y);
+		return wrapper->GetDataI(index, x, y, HFLIPPED);
 	}
 	void Advance(int t) {
 		if (t%wrapper->interval==0) {
 			index++;
-			if (index>=wrapper->numFrames) index=0;
+			if (index>=wrapper->NumFrames()) index=0;
 		}
 	}
 	int index = 0;
 	AnimationResource* wrapper;
+
 
 
 

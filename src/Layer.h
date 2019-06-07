@@ -10,6 +10,9 @@
 
 class Layer {
 public:
+	virtual ~Layer() {
+
+	}
 	virtual unsigned int PixelAt(int, int) = 0;
 };
 

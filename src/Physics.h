@@ -54,6 +54,9 @@ struct Rect {
 
 class Shape {
 public:
+	virtual ~Shape() {
+
+	}
 	virtual std::set<Vector> Axes (Vector) = 0;
 	virtual Vector Proj(Vector axis) = 0;
 	virtual Rect ContainBox(Vector pos) = 0;
@@ -86,29 +89,30 @@ public:
 };
 
 struct CollisionInfo {
+	CollisionInfo() {
 
+	}
 };
 
 class CollisionTrigger {
 public:
-	float id;
+	int id = 0;
 	Vector pos;
-	CollisionInfo info;
+	CollisionInfo* info;
 	int flag;
 	Shape* shape;
+	CollisionTrigger(CollisionInfo* info, Shape* shape, int flag): info(info), flag(flag), shape(shape) {
+	}
 };
 
 int sign(float f);
 
 struct Collision {
-	CollisionInfo otherInfo;
+	CollisionInfo* otherInfo;
 	Vector normal;
 	Vector otherPos;
 	int otherFlag;
-	Collision(CollisionInfo info, Vector n, Vector op, int f) : otherInfo(info), normal(n), otherPos(n), otherFlag(f) {
-
-	}
-	Collision() {
+	Collision(CollisionInfo* info, Vector n, Vector op, int f) : otherInfo(info), normal(n), otherPos(op), otherFlag(f) {
 
 	}
 };

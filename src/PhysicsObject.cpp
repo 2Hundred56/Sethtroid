@@ -8,8 +8,8 @@
 #include "PhysicsObject.h"
 #include <cmath>
 
-PhysicsObject::PhysicsObject(): GameObject(){
-
+PhysicsObject::PhysicsObject(Game* game): GameObject(game){
+	trigger=0;
 }
 
 PhysicsObject::~PhysicsObject() {
@@ -23,15 +23,13 @@ void PhysicsObject::InitialUpdate() {
 
 void PhysicsObject::CollisionPoll() {
 	displacement = Vector(0, 0);
-	Collision collision;
 	std::forward_list<Collision> collisions = game->manager->GetCollisions(trigger, SOLID);
 	for (auto it = collisions.begin(); it!=collisions.end(); it++) {
-		collision=*it;
-		if (std::abs(collision.normal.x)>std::abs(displacement.x)) {
-			displacement.x=collision.normal.x;
+		if (std::abs((*it).normal.x)>std::abs(displacement.x)) {
+			displacement.x=(*it).normal.x;
 		}
-		if (std::abs(collision.normal.y)>std::abs(displacement.y)) {
-			displacement.y=collision.normal.y;
+		if (std::abs((*it).normal.y)>std::abs(displacement.y)) {
+			displacement.y=(*it).normal.y;
 		}
 	}
 }

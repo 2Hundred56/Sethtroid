@@ -7,9 +7,9 @@
 
 #include "SpritedObject.h"
 
-SpritedObject::SpritedObject() : GameObject() {
+SpritedObject::SpritedObject(Game* game) : GameObject(game) {
 	// TODO Auto-generated constructor stub
-
+	sprite=0;
 }
 
 SpritedObject::~SpritedObject() {
@@ -18,5 +18,5 @@ SpritedObject::~SpritedObject() {
 
 void SpritedObject::Render() {
 	Vector choice = pos-Vector(sprite->GetWidth()/2.0, sprite->GetHeight()/2.0);
-	game->interface->BlitSprite(sprite, choice.x, choice.y);
+	game->interface->BlitSprite(sprite, (int) choice.x, (int) choice.y);
 }

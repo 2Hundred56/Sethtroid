@@ -18,9 +18,9 @@ public:
 	int Initialize();
 	bool Update();
 	void Close();
-	SDLInterface* interface;
-	CollisionManager* manager;
-	int clock;
+	SDLInterface* interface = NULL;
+	CollisionManager* manager = NULL;
+	int clock = 0;
 protected:
 	std::forward_list<GameObject*> gameObjects;
 

@@ -35,6 +35,7 @@ Vector operator +(Vector v1, Vector v2) {
 
 Vector& operator +=(Vector& orig, Vector add) {
 	orig = Vector(orig.x+add.x, orig.y+add.y);
+	return orig;
 }
 
 int sign(float f) {

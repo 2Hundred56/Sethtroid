@@ -39,7 +39,7 @@ unsigned int getpixel(SDL_Surface *surface, int x, int y)
         return 0;
     }
 }
-SDLInterface::SDLInterface() { // @suppress("Class members should be properly initialized")
+SDLInterface::SDLInterface() {
 	// TODO Auto-generated constructor stub
 
 }
@@ -62,7 +62,7 @@ int SDLInterface::InitGraphics() {
 	}
 	return 0;
 }
-void SDLInterface::WritePixel(int data, int x, int y) {
+void SDLInterface::WritePixel(unsigned int data, int x, int y) {
 	if ((data>>24)==0) return;
 	else {
 		pixels[y*SCREEN_WIDTH+x]=data;
@@ -151,6 +151,7 @@ Sprite* SDLInterface::_loadSprite(char* path) {
 			output->SetPixel(i, j, data[0]);
 		}
 	}
+	return output;
 }
 
 void SDLInterface::_exportSprite(char* path, Sprite* sprite) {
@@ -212,12 +213,12 @@ void SDLInterface::_WriteAnimation(char* path, AnimationResource* animation) {
 	char palette[4];
 	char smallHeader[2];
 	std::cout<<animation->frames[0].w;
-	header[0]=animation->numFrames;
+	header[0]=animation->NumFrames();
 	header[1]=animation->interval;
 	header[2]=animation->numPalettes;
 	std::ofstream file (path, std::ios::out | std::ios::binary);
 	file.write(header, 3);
-	for (int i=0; i<animation->numPalettes; i++) {
+	for (int i=0; i<header[2]; i++) {
 		int n = animation->GetPalette(i);
 		palette[0] = (n >> 24) & 0xFF;
 		palette[1] = (n >> 16) & 0xFF;
@@ -225,7 +226,7 @@ void SDLInterface::_WriteAnimation(char* path, AnimationResource* animation) {
 		palette[3] = n & 0xFF;
 		file.write(palette, 4);
 	}
-	for (int i=0; i<animation->numFrames;i++) {
+	for (int i=0; i<header[0];i++) {
 		std::cout<<animation->frames[0].w;
 		Frame frame = animation->frames[i];
 		smallHeader[0]=frame.w;
@@ -251,13 +252,13 @@ AnimationResource* SDLInterface::LoadAnim(char* path) {
 	std::string pth = std::string(path);
 	std::map<std::string, AnimationResource*>::iterator it=paths.find(pth);
 	if (it!=paths.end()) return it->second;
-	AnimationResource* anim;
+	AnimationResource* anim = new AnimationResource();
 	std::ifstream file (path, std::ios::in | std::ios::binary);
 	file.read(header, 3);
 	anim->interval=header[1];
 	for (int i=0; i<header[2];i++) {
 		file.read(palette, 4);
-		anim->SetPalette(i, palette[0]<<24+palette[1]<<16+palette[2]<<8+palette[3]);
+		anim->SetPalette(i, (palette[0]<<24)+(palette[1]<<16)+(palette[2]<<8)+palette[3]);
 	}
 	for (int k=0; k<header[0];k++) {
 		file.read(smallHeader, 2);

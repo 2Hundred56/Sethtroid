@@ -9,6 +9,7 @@
 #define ANIMATIONRESOURCE_H_
 
 #include "Sprite.h"
+#include <vector>
 struct Frame {
 	char** data;
 	int w;
@@ -16,48 +17,51 @@ struct Frame {
 	Frame(char** d, int w, int h) : data(d), w(w), h(h) {
 
 	}
-	Frame() {
-
-	}
 };
 
-class AnimationResource: public Sprite {
+class AnimationResource {
 public:
-	AnimationResource() : Sprite(0, 0) {
-		frames = new Frame[16];
+	AnimationResource() {
+		frames = std::vector<Frame>();
+		palettes = new unsigned int [16];
 	}
 	virtual ~AnimationResource() {
 
 	}
-	int GetWidth(int index) {
+	int GetWidthI(int index) {
 		return frames[index].w;
 	}
-	int GetHeight(int index) {
+	int GetHeightI(int index) {
 		return frames[index].h;
 	}
-	unsigned int PixelAt(int index, int x, int y) {
-		if (!HFLIPPED) {
+	unsigned int PixelAtI(bool hflip, int index, int x, int y) {
+		if (!hflip) {
 			return palettes[frames[index].data[x][y]];
 		}
 		else {
-			return palettes[frames[index].data[width-x-1][y]];
+			return palettes[frames[index].data[GetWidthI(index)-x-1][y]];
 		}
 	}
 	void AddFrame(char** data, int w, int h) {
-		frames[numFrames]=Frame(data, w, h);
-		numFrames++;
+		frames.push_back(Frame(data, w, h));
 	}
-	char GetData(int index, int x, int y) {
-		if (!HFLIPPED) {
+	char GetDataI(int index, int x, int y, bool hflip) {
+		if (!hflip) {
 			return frames[index].data[x][y];
 		}
 		else {
-			return frames[index].data[width-x-1][y];
+			return frames[index].data[GetWidthI(index)-x-1][y];
 		}
 	}
-	Frame* frames;
+	int NumFrames() {
+		return frames.size();
+	}
+	int GetPalette(int i) const { return palettes[i]; }
+	void SetPalette(int i, unsigned int pixel) { palettes[i]=pixel; if (numPalettes<(i+1)) numPalettes=i+1;}
+	std::vector<Frame> frames;
 	int interval = 1;
-	int numFrames = 0;
+	unsigned int* palettes;
+	int numPalettes = 0;
 
 };
 

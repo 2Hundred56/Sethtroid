@@ -12,8 +12,12 @@ namespace SMB1 {
 
 class Mario: public Player {
 public:
-	Mario();
-	virtual ~Mario();
+	Mario(Game* game) : GameObject(game), Player(game) {
+
+	}
+	virtual ~Mario() {
+
+	}
 	bool IsRunning() {return game->interface->isRunning;}
 	Vector Gravity() {
 		if (game->interface->isJumping && state==JUMPING) {
@@ -45,6 +49,14 @@ public:
 	float AirDecel() {
 		if (IsRunning()) return 0.0508422;
 		else return 0.0352783;
+	}
+	void LoadResources() {
+		standing = new Animation(game->interface->LoadAnim("rsrc/smb1/mario/mario-idle.bin"));
+		jumping = new Animation(game->interface->LoadAnim("rsrc/smb1/mario/mario-jump.bin"));
+		falling = new Animation(game->interface->LoadAnim("rsrc/smb1/mario/mario-jump.bin"));
+		running = new Animation(game->interface->LoadAnim("rsrc/smb1/mario/mario-run.bin"));
+		braking = new Animation(game->interface->LoadAnim("rsrc/smb1/mario/mario-brake.bin"));
+		trigger = new CollisionTrigger(new CollisionInfo(), new AABB(9, 9), FOOT|HIT);
 	}
 };
 

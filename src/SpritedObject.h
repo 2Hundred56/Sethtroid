@@ -10,9 +10,9 @@
 
 #include "GameObject.h"
 
-class SpritedObject: public GameObject {
+class SpritedObject: public virtual GameObject {
 public:
-	SpritedObject();
+	SpritedObject(Game* game);
 	virtual ~SpritedObject();
 	virtual void Render();
 protected:

@@ -10,12 +10,11 @@
 #include "Physics.h"
 class Tile {
 public:
-	Tile(int, int);
-	Tile(int, int, float);
+	Tile(int, int, Shape*, int flag, CollisionInfo* info);
 	virtual ~Tile();
 	int originX, originY;
 	Shape* shape;
-	CollisionInfo info;
+	CollisionInfo* info;
 	int flag;
 };
 

@@ -14,7 +14,7 @@ public:
 	Tileset();
 	virtual ~Tileset();
 	unsigned int TilePixelAt(int tile, int x, int y);
-	Tile* GetTile(int i) const { return tiles[i]; }
+	Tile* GetTile(int i) const { return (tiles[i]); }
 protected:
 	Tile** tiles;
 };

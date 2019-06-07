@@ -11,7 +11,7 @@
 class Game;
 class GameObject {
 public:
-	GameObject() {
+	GameObject(Game* game) : game(game){
 	}
 	virtual ~GameObject() {
 
@@ -34,8 +34,7 @@ public:
 	virtual void Render() {
 
 	}
-protected:
 	Vector pos;
+	Game* game;
 };
-static Game* game;
 #endif /* GAMEOBJECT_H_ */

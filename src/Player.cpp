@@ -7,7 +7,7 @@
 
 #include "Player.h"
 
-Player::Player() : PhysicsObject(), SpritedObject() {
+Player::Player(Game* game) : PhysicsObject(game) {
 
 }
 
@@ -46,6 +46,9 @@ void Player::GeneralUpdate() {
 			else gsp+=AirAccel();
 			ChangeState(RUNNING);
 		}
+	}
+	else if (grounded) {
+		ChangeState(STANDING);
 	}
 }
 

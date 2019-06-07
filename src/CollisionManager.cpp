@@ -81,10 +81,10 @@ std::forward_list<Collision> CollisionManager::GetCollisions(
 	int i1, i2, j1, j2, i, j;
 	for (auto it=tileLayers.begin(); it!=tileLayers.end(); it++) {
 		layer=*it;
-		i1 = (r.x)/(layer->tileSize);
-		i2 = (r.x+r.w)/(layer->tileSize);
-		j1 = (r.y)/(layer->tileSize);
-		j2 = (r.y+r.h)/(layer->tileSize);
+		i1 = (int) (r.x)/(layer->tileSize);
+		i2 = (int) (r.x+r.w)/(layer->tileSize);
+		j1 = (int) (r.y)/(layer->tileSize);
+		j2 = (int) (r.y+r.h)/(layer->tileSize);
 		i = i1;
 		j = j1;
 		while (true) {

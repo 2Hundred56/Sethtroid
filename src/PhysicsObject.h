@@ -11,9 +11,9 @@
 #include "GameObject.h"
 #include "Physics.h"
 
-class PhysicsObject: public GameObject {
+class PhysicsObject: public virtual GameObject {
 public:
-	PhysicsObject();
+	PhysicsObject(Game* game);
 	virtual ~PhysicsObject();
 	virtual void InitialUpdate();
 	virtual void CollisionPoll();

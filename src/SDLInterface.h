@@ -13,7 +13,7 @@
 #include "AnimationResource.h"
 #include <map>
 #include <string>
-using namespace std;
+
 class SDLInterface{
 public:
 	SDLInterface();
@@ -21,7 +21,7 @@ public:
 	virtual int InitGraphics();
 	virtual bool EventPoll();
 	virtual int CloseGraphics();
-	virtual void WritePixel(int data, int x, int y);
+	virtual void WritePixel(unsigned int data, int x, int y);
 	virtual void UpdateGraphics();
 	virtual void BlitSprite(Sprite* sprite, int x, int y);
 	virtual void BlitLayer(Layer*, int offsetx=0, int offsety=0);
@@ -38,7 +38,7 @@ protected:
 	SDL_Texture* screenTexture;
 	SDL_Renderer* renderer;
 	SDL_Window* window;
-	map<string, AnimationResource*> paths;
+	std::map<std::string, AnimationResource*> paths;
 	unsigned int * pixels;
 
 };
