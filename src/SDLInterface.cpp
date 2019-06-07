@@ -106,7 +106,7 @@ void SDLInterface::BlitLayer(Layer* layer, int ox, int oy) {
 		}
 	}
 }
-Sprite* SDLInterface::loadImage(char* path) {
+Sprite* SDLInterface::_loadImage(char* path) {
 	SDL_Surface* surface = SDL_LoadBMP(path);
 	SDL_LockSurface(surface);
 	Sprite* output = new Sprite(surface->w, surface->h);
@@ -134,7 +134,7 @@ Sprite* SDLInterface::loadImage(char* path) {
 	return output;
 }
 
-Sprite* SDLInterface::loadSprite(char* path) {
+Sprite* SDLInterface::_loadSprite(char* path) {
 	char header[4];
 	char palette[2];
 	char data[1];
@@ -153,7 +153,7 @@ Sprite* SDLInterface::loadSprite(char* path) {
 	}
 }
 
-void SDLInterface::exportSprite(char* path, Sprite* sprite) {
+void SDLInterface::_exportSprite(char* path, Sprite* sprite) {
 	char header[4];
 	header[0]=0;
 	header[1]=sprite->GetWidth();
@@ -170,21 +170,24 @@ void SDLInterface::exportSprite(char* path, Sprite* sprite) {
 	file.write(data, header[1]*header[2]);
 }
 
-Animation* SDLInterface::ImportAnimation(char* path, std::forward_list<int> widths, int interval) {
+AnimationResource* SDLInterface::_ImportAnimation(char* path, std::forward_list<int> widths, int interval) {
 	SDL_Surface* surface = SDL_LoadBMP(path);
+	char**  data;
+	Sprite*  output;
 	SDL_LockSurface(surface);
-	Animation* anim = new Animation();
+	AnimationResource* anim = new AnimationResource();
 	anim->interval=interval;
 	int palettesSet=0;
 	int sum = 0;
 	for (auto it = widths.begin(); it!=widths.end(); it++) {
-		Sprite* output = new Sprite(*it, surface->h);
+		output = new Sprite(*it, surface->h);
 		for (int i=0; i<output->GetWidth(); i++) {
 			for (int j=0;j<output->GetHeight(); j++) {
 				unsigned int pixel = getpixel(surface, i+sum, j);
 				for (int k=0; k<palettesSet+1; k++) {
 					if (k==palettesSet) {
 						output->SetPalette(k, pixel);
+						anim->SetPalette(k, pixel);
 						output->SetPixel(i, j, k);
 						palettesSet++;
 						break;
@@ -198,28 +201,32 @@ Animation* SDLInterface::ImportAnimation(char* path, std::forward_list<int> widt
 				}
 			}
 		}
-		char** data = output->data;
+		data = output->data;
 		anim->AddFrame(data, output->GetWidth(), output->GetHeight());
 		sum+=*it;
-
 	}
 	return anim;
 }
-void SDLInterface::WriteAnimation(char* path, Animation* animation) {
+void SDLInterface::_WriteAnimation(char* path, AnimationResource* animation) {
 	char header[3];
-	char palette[2];
+	char palette[4];
 	char smallHeader[2];
+	std::cout<<animation->frames[0].w;
 	header[0]=animation->numFrames;
 	header[1]=animation->interval;
 	header[2]=animation->numPalettes;
 	std::ofstream file (path, std::ios::out | std::ios::binary);
 	file.write(header, 3);
 	for (int i=0; i<animation->numPalettes; i++) {
-		palette[0]=(int) (animation->palettes[i]/256);
-		palette[1]=animation->palettes[i]-palette[0]*256;
-		file.write(palette, 2);
+		int n = animation->GetPalette(i);
+		palette[0] = (n >> 24) & 0xFF;
+		palette[1] = (n >> 16) & 0xFF;
+		palette[2] = (n >> 8) & 0xFF;
+		palette[3] = n & 0xFF;
+		file.write(palette, 4);
 	}
 	for (int i=0; i<animation->numFrames;i++) {
+		std::cout<<animation->frames[0].w;
 		Frame frame = animation->frames[i];
 		smallHeader[0]=frame.w;
 		smallHeader[1]=frame.h;
@@ -233,4 +240,37 @@ void SDLInterface::WriteAnimation(char* path, Animation* animation) {
 		file.write(data, frame.w*frame.h);
 	}
 
+}
+
+AnimationResource* SDLInterface::LoadAnim(char* path) {
+	char header[3];
+	char palette[4];
+	char smallHeader[2];
+	char buffer[1];
+	char** data;
+	std::string pth = std::string(path);
+	std::map<std::string, AnimationResource*>::iterator it=paths.find(pth);
+	if (it!=paths.end()) return it->second;
+	AnimationResource* anim;
+	std::ifstream file (path, std::ios::in | std::ios::binary);
+	file.read(header, 3);
+	anim->interval=header[1];
+	for (int i=0; i<header[2];i++) {
+		file.read(palette, 4);
+		anim->SetPalette(i, palette[0]<<24+palette[1]<<16+palette[2]<<8+palette[3]);
+	}
+	for (int k=0; k<header[0];k++) {
+		file.read(smallHeader, 2);
+		data=new char*[smallHeader[0]];
+		for(int i = 0; i < smallHeader[0]; ++i) data[i] = new char[smallHeader[1]];
+		for (int i = 0; i<smallHeader[0]; i++) {
+			for (int j = 0; j<smallHeader[1]; j++) {
+				file.read(buffer, 1);
+				data[i][j]=buffer[0];
+			}
+		}
+		anim->AddFrame(data, smallHeader[0], smallHeader[1]);
+	}
+	paths.insert(std::pair<std::string, AnimationResource*>(pth, anim));
+	return anim;
 }

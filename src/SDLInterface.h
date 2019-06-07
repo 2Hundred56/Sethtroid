@@ -10,7 +10,10 @@
 #include "SDL2/SDL.h"
 #include "Tileset.h"
 #include "Layer.h"
-#include "Animation.h"
+#include "AnimationResource.h"
+#include <map>
+#include <string>
+using namespace std;
 class SDLInterface{
 public:
 	SDLInterface();
@@ -22,18 +25,20 @@ public:
 	virtual void UpdateGraphics();
 	virtual void BlitSprite(Sprite* sprite, int x, int y);
 	virtual void BlitLayer(Layer*, int offsetx=0, int offsety=0);
-	virtual Sprite* loadImage(char*);
-	virtual Sprite* loadSprite(char*);
-	void exportSprite(char* path, Sprite* sprite);
+	virtual Sprite* _loadImage(char*);
+	virtual Sprite* _loadSprite(char*);
+	void _exportSprite(char* path, Sprite* sprite);
 	float horizInput;
 	bool isJumping;
 	bool isRunning;
-	void WriteAnimation(char* path, Animation* animation);
-	Animation* ImportAnimation(char* path, std::forward_list<int> widths, int interval);
+	void _WriteAnimation(char* path, AnimationResource* animation);
+	AnimationResource* _ImportAnimation(char* path, std::forward_list<int> widths, int interval);
+	AnimationResource* LoadAnim(char* path);
 protected:
 	SDL_Texture* screenTexture;
 	SDL_Renderer* renderer;
 	SDL_Window* window;
+	map<string, AnimationResource*> paths;
 	unsigned int * pixels;
 
 };

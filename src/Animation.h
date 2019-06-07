@@ -9,58 +9,37 @@
 #define ANIMATION_H_
 
 #include "Sprite.h"
-struct Frame {
-	char** data;
-	int w;
-	int h;
-	Frame(char** d, int w, int h) : data(d), w(w), h(h) {
-
-	}
-};
+#include "AnimationResource.h"
 class Animation: public Sprite {
 public:
 	Animation() : Sprite(0, 0){
+
 	}
 	virtual ~Animation() {
 
 	}
 	int GetWidth() {
-		return frames[index].w;
+		return wrapper->GetWidth(index);
 	}
 	int GetHeight() {
-		return frames[index].h;
+		return wrapper->GetHeight(index);
 	}
 	unsigned int PixelAt(int x, int y) {
-		if (!HFLIPPED) {
-			return palettes[frames[index].data[x][y]];
-		}
-		else {
-			return palettes[frames[index].data[width-x-1][y]];
-		}
-	}
-	void AddFrame(char** data, int w, int h) {
-		frames[numFrames]=Frame(data, w, h);
-		numFrames++;
+		return wrapper->PixelAt(index, x, y);
 	}
 	char GetData(int x, int y) {
-		if (!HFLIPPED) {
-			return frames[index].data[x][y];
-		}
-		else {
-			return frames[index].data[width-x-1][y];
-		}
+		return wrapper->GetData(index, x, y);
 	}
 	void Advance(int t) {
-		if (t%interval==0) {
+		if (t%wrapper->interval==0) {
 			index++;
-			if (index>=numFrames) index=0;
+			if (index>=wrapper->numFrames) index=0;
 		}
 	}
-	int interval = 1;
 	int index = 0;
-	Frame* frames;
+	AnimationResource* wrapper;
 
-	int numFrames = 0;
+
 
 };
 
