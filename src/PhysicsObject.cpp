@@ -33,6 +33,7 @@ void PhysicsObject::CollisionPoll() {
 			displacement.y=(*it).normal.y;
 		}
 	}
+
 }
 
 void PhysicsObject::GeneralUpdate() {
