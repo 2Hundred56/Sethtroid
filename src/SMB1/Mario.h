@@ -8,7 +8,8 @@
 #ifndef SMB1_MARIO_H_
 #define SMB1_MARIO_H_
 #include "../Player.h"
-namespace SMB1 {
+#include <cmath>
+namespace smb1 {
 
 class Mario: public Player {
 public:
@@ -20,11 +21,15 @@ public:
 	}
 	bool IsRunning() {return game->interface->isRunning;}
 	Vector Gravity() {
-		if (game->interface->isJumping && state==JUMPING) {
-			return Vector(0, 0.15625);
+		if (game->interface->isJumping) {
+			if (std::abs(gsp)<1) return Vector(0, 0.125);
+			if (std::abs(gsp)<2.5) return Vector(0, 0.1171875);
+			else return Vector(0, 0.15625);
 		}
 		else {
-			return Vector(0, 0.5625);
+			if (std::abs(gsp)<1) return Vector(0, 0.4375);
+			if (std::abs(gsp)<2.5) return Vector(0, 0.375);
+			else return Vector(0, 0.5625);
 		}
 	}
 	float Friction() {
@@ -44,12 +49,17 @@ public:
 	float Decel() {
 		return 0.101563;
 	}
+	float JumpVelocity() {
+		if (std::abs(gsp)<1) return 4;
+		if (std::abs(gsp)<2.5) return 4;
+		else return 5;
+	}
 	float TopSpeed() {
 		if (IsRunning()) return 2.5625;
 		else return 1.5625;
 	}
 	float AirAccel() {
-		if (IsRunning()) return 0.0508422;
+		if (IsRunning() ) return 0.0508422;
 		else return 0.0352783;
 	}
 	float AirDecel() {

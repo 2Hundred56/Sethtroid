@@ -63,7 +63,7 @@ Vector CollisionManager::CheckCollision(Shape* s1, Vector p1, Shape* s2, Vector 
 		if (axisLength>ca) return Vector(0, 0);
 		sgn=sign(proj1.x-proj2.x+proj1.y-proj2.y);
 		offset=std::abs(axisLength-ca);
-		if (offset<minDst) {
+		if (offset<std::abs(minDst)) {
 			minDst=offset*sgn;
 			maxAxis=axis;
 		}
@@ -89,12 +89,15 @@ std::forward_list<Collision> CollisionManager::GetCollisions(
 		j = j1;
 		while (true) {
 			tile=layer->getTile(i, j);
-			if (tile->flag&flag) {
-				v=CheckCollision(trigger->shape, trigger->pos, tile->shape, Vector((i+0.5)*layer->tileSize,(j+0.5)*layer->tileSize));
-				if (v.x!=0 || v.y!=0) {
-					collisions.push_front(Collision(tile->info, v, Vector((i+0.5)*layer->tileSize,(j+0.5)*layer->tileSize), tile->flag));
+			if (tile!=0) {
+				if (tile->flag&flag) {
+					v=CheckCollision(trigger->shape, trigger->pos, tile->shape, Vector((i+0.5)*layer->tileSize,(j+0.5)*layer->tileSize));
+					if (v.x!=0 || v.y!=0) {
+						collisions.push_front(Collision(tile->info, v, Vector((i+0.5)*layer->tileSize,(j+0.5)*layer->tileSize), tile->flag));
+					}
 				}
 			}
+
 			i++;
 			if (i>i2) {
 				i=i1;
@@ -103,11 +106,14 @@ std::forward_list<Collision> CollisionManager::GetCollisions(
 			if (j>j2) break;
 		}
 	}
+
 	for (i=(int) trigger->pos.x/tileSize-1; i<(int) trigger->pos.x/tileSize+1; i++) {
 		for (j=(int) trigger->pos.y/tileSize-1; j<(int) trigger->pos.y/tileSize+1; j++) {
 			CollisionTile tile = tileGrid[i][j];
+
 			for (auto it=tile.begin(); it!=tile.end(); it++) {
 				CollisionTrigger* other = *it;
+
 				v=CheckCollision(trigger->shape, trigger->pos, other->shape, other->pos);
 				if (v.x!=0 || v.y!=0) {
 					collisions.push_front(Collision(other->info, v, other->pos, other->flag));
@@ -115,5 +121,6 @@ std::forward_list<Collision> CollisionManager::GetCollisions(
 			}
 		}
 	}
+
 	return collisions;
 }

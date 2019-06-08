@@ -28,6 +28,7 @@ public:
 	virtual float AirAccel() = 0;
 	virtual float AirDecel() = 0;
 	virtual float Friction() = 0;
+	virtual float JumpVelocity() = 0;
 	virtual void Render() {
 		Vector choice = pos-Vector(current->GetWidth()/2.0, current->GetHeight()/2.0);
 		game->interface->BlitSprite(current, (int) choice.x, (int) choice.y);

@@ -30,6 +30,7 @@ public:
 	void _exportSprite(char* path, Sprite* sprite);
 	float horizInput;
 	bool isJumping;
+	bool justJumping;
 	bool isRunning;
 	void _WriteAnimation(char* path, AnimationResource* animation);
 	AnimationResource* _ImportAnimation(char* path, std::forward_list<int> widths, int interval);

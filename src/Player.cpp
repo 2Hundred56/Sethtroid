@@ -11,13 +11,13 @@ Player::Player(Game* game) : PhysicsObject(game) {
 
 }
 
-void Player::GeneralUpdate() {
+void Player::GeneralUpdate(){
+	PhysicsObject::GeneralUpdate();
 	current->Advance(game->clock);
-	grounded=true;//(displacement.y<0);
+	grounded=(displacement.y<0);
 	if (!grounded) {
 
 		if (velocity.y>-TerminalVel()) {
-			std::cout<<velocity.y;
 			velocity+=Gravity();
 		}
 		if (velocity.y>0) ChangeState(JUMPING);
@@ -30,14 +30,20 @@ void Player::GeneralUpdate() {
 		current->HFLIPPED=true;
 
 		if (gsp>0) {
-			if (grounded) gsp-=Decel();
+			if (grounded) {
+				gsp-=Decel();
+				ChangeState(BRAKING);
+			}
 			else gsp-=AirDecel();
-			ChangeState(BRAKING);
+
 		}
 		else if (gsp>-TopSpeed()) {
-			if (grounded) gsp-=Accel();
+			if (grounded) {
+				gsp-=Accel();
+				ChangeState(RUNNING);
+			}
 			else gsp-=AirAccel();
-			ChangeState(RUNNING);
+
 		}
 		else {
 			gsp+=Friction();
@@ -46,14 +52,19 @@ void Player::GeneralUpdate() {
 	else if (game->interface->horizInput>0) {
 		current->HFLIPPED=false;
 		if (gsp<0) {
-			if (grounded) gsp+=Decel();
+			if (grounded) {
+				gsp+=Decel();
+				ChangeState(BRAKING);
+			}
 			else gsp+=AirDecel();
-			ChangeState(BRAKING);
 		}
 		else if (gsp<TopSpeed()) {
-			if (grounded) gsp+=Accel();
+			if (grounded) {
+				gsp+=Accel();
+				ChangeState(RUNNING);
+			}
 			else gsp+=AirAccel();
-			ChangeState(RUNNING);
+
 		}
 		else {
 			gsp-=Friction();
@@ -65,6 +76,9 @@ void Player::GeneralUpdate() {
 		if (gsp==0) {
 			ChangeState(STANDING);
 		}
+	}
+	if (grounded && game->interface->justJumping) {
+		velocity.y=-JumpVelocity();
 	}
 	velocity.x=gsp;
 }

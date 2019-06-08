@@ -23,7 +23,7 @@ public:
 	int clock = 0;
 protected:
 	std::forward_list<GameObject*> gameObjects;
-	TileLayer* layer;
+	std::vector<TileLayer*> layers;
 
 
 };

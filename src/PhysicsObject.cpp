@@ -37,4 +37,7 @@ void PhysicsObject::CollisionPoll() {
 
 void PhysicsObject::GeneralUpdate() {
 	pos+=displacement-Vector(sign(displacement.x), sign(displacement.y));
+	if (displacement.y>0 && velocity.y<0) {
+		velocity.y=0;
+	}
 }

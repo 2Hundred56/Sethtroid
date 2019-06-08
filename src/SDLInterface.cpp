@@ -95,6 +95,8 @@ bool SDLInterface::EventPoll() {
 		horizInput=0;
 	}
 	isRunning=state[SDL_SCANCODE_F];
+	justJumping=state[SDL_SCANCODE_SPACE]&&!isJumping;
+	isJumping=state[SDL_SCANCODE_SPACE];
 	while (SDL_PollEvent(&e)){
 		if (e.type == SDL_QUIT){
 			return false;
@@ -193,15 +195,18 @@ void SDLInterface::_exportSprite(char* path, Sprite* sprite) {
 
 AnimationResource* SDLInterface::_ImportAnimation(char* path, std::forward_list<int> widths, int interval) {
 	SDL_Surface* surface = SDL_LoadBMP(path);
+	if (surface==NULL) std::cout<<"!"<<std::flush;
 	char**  data;
 	Sprite*  output;
 	SDL_LockSurface(surface);
+	std::cout<<"X"<<std::flush;
 	AnimationResource* anim = new AnimationResource();
 	anim->interval=interval;
 	int palettesSet=0;
 	int sum = 0;
 	for (auto it = widths.begin(); it!=widths.end(); it++) {
 		output = new Sprite(*it, surface->h);
+		output->palettes=anim->palettes;
 		for (int i=0; i<output->GetWidth(); i++) {
 			for (int j=0;j<output->GetHeight(); j++) {
 				unsigned int pixel = getpixel(surface, i+sum, j);
@@ -328,6 +333,7 @@ Tileset* SDLInterface::LoadTileset(char* path) {
 	Tileset* tileset = new Tileset(header[0], header[1]);
 	for (int i=0; i<header[3];i++) {
 		file.read(palette, 4);
+		std::cout<<"\n"<<std::hex<<(palette[0]<<24)+(palette[1]<<16)+(palette[2]<<8)+palette[3]<<"\n"<<std::flush;
 		tileset->SetPalette(i, (palette[0]<<24)+(palette[1]<<16)+(palette[2]<<8)+palette[3]);
 			//std::cout<<"\n"<<hex(palette[0])<<" "<<hex(palette[1])<<" "<<hex(palette[2])<<" "<<hex(palette[3])<<"\n"<<std::flush;
 			//std::cout<<"\n"<<(palette[0]<<24)+(palette[1]<<16)+(palette[2]<<8)+palette[3]<<"\n"<<std::flush;
@@ -337,18 +343,20 @@ Tileset* SDLInterface::LoadTileset(char* path) {
 	for (int i = 0; i <header[0]; i++) {
 		for (int j = 0; j<header[1]; j++) {
 			file.read(buffer, 1);
-				if (buffer[0]!=0) {}
 			data[j][i]=buffer[0];
-			}
+		}
 	}
 	tileset->data=data;
+
 	int k=0;
+
 	for (int i = 0; i<header[0]/header[2]; i++) {
-		for (int j = 0; j<header[1]/header[2]; i++) {
+		for (int j = 0; j<header[1]/header[2]; j++) {
 			file.read(buffer, 1);
 			switch (buffer[0]) {
 			case 0:
 				tileset->tiles[k]=new Tile(i*header[2], j*header[2], new AABB(header[2]/2, header[2]/2), SOLID, new CollisionInfo());
+
 				k++;
 				break;
 			default: break;

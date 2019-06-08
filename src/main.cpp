@@ -13,6 +13,7 @@
 
 int main( int argc, char* args[] )
 {
+
 	typedef std::chrono::high_resolution_clock Time;
 	typedef std::chrono::milliseconds ms;
 	typedef std::chrono::duration<float> fsec;
@@ -27,7 +28,7 @@ int main( int argc, char* args[] )
 		overflow+=dt;
 		if (overflow>(1.0/60.0)) {
 			if (!game->Update()) break;
-			overflow-=1.0/60.0;
+			overflow=0;
 		}
 		t0=t1;
 		t1=Time::now();
