@@ -63,7 +63,8 @@ Vector CollisionManager::CheckCollision(Shape* s1, Vector p1, Shape* s2, Vector 
 		if (axisLength>ca) return Vector(0, 0);
 		sgn=sign(proj1.x-proj2.x+proj1.y-proj2.y);
 		offset=std::abs(axisLength-ca);
-		if (offset<std::abs(minDst)) {
+		//std::cout<<offset*sgn<<axis<<"/"<<std::flush;
+		if ((offset*sgn)!=0 && offset<std::abs(minDst)) {
 			minDst=offset*sgn;
 			maxAxis=axis;
 		}

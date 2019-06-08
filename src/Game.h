@@ -21,6 +21,7 @@ public:
 	SDLInterface* interface = NULL;
 	CollisionManager* manager = NULL;
 	int clock = 0;
+	bool paused=false;
 protected:
 	std::forward_list<GameObject*> gameObjects;
 	std::vector<TileLayer*> layers;

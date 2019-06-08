@@ -37,20 +37,19 @@ int Game::Initialize() {
 	layers[0]->setTile(11, 12, 1, 0);
 	layers[0]->setTile(12, 12, 1, 0);
 	layers[0]->setTile(13, 12, 1, 0);
-	layers[0]->setTile(14, 8, 1, 0);
 	layers[0]->setTile(14, 7, 1, 0);
 	for (int i=4; i<28; i++) {
 		layers[0]->setTile(i, 12, 1, 0);
 	}
-	for (int i=14; i<20; i++) {
+	for (int i=15; i<20; i++) {
 			layers[0]->setTile(i, 8, 1, 0);
 		}
 	layers[0]->setTile(20, 8, 1, 0);
 	layers[0]->setTile(20, 7, 1, 0);
 	manager->AddLayer(layers[0]);
 	//TODO: Create objects
-	gameObjects.push_front(new smb1::Goomba(this));
-	gameObjects.front()->pos=Vector(240, 176);
+	//gameObjects.push_front(new smb1::Goomba(this));
+	//gameObjects.front()->pos=Vector(256, 100);
 	gameObjects.push_front(new smb1::Mario(this));
 	gameObjects.front()->pos=Vector(100,100);
 	for (auto it = gameObjects.begin(); it!=gameObjects.end(); it++) {
@@ -60,6 +59,7 @@ int Game::Initialize() {
 }
 
 bool Game::Update() {
+	if (paused) return interface->EventPoll();
 	for (auto it = gameObjects.begin(); it!=gameObjects.end(); it++) (*it)->InitialUpdate();
 	if (!interface->EventPoll()) return false;
 	manager->UpdateGrid();
