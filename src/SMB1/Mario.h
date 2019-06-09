@@ -72,7 +72,7 @@ public:
 		falling = new Animation(game->interface->LoadAnim("rsrc/smb1/mario/mario-jump.bin"));
 		running = new Animation(game->interface->LoadAnim("rsrc/smb1/mario/mario-run.bin"));
 		braking = new Animation(game->interface->LoadAnim("rsrc/smb1/mario/mario-brake.bin"));
-		trigger = new CollisionTrigger(new CollisionInfo(), new AABB(8, 8), FOOT|HIT);
+		trigger = new CollisionTrigger(new CollisionInfo(), new AABB(9, 9), FOOT|HIT);
 		current = standing;
 	}
 };
