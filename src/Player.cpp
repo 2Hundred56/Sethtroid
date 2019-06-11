@@ -22,20 +22,15 @@ void Player::LoadResources() {
 	solidTriggers.push_back(new OffsetTrigger(new CollisionInfo(), new AABB(hw-off, 0.5), FOOT, this, Vector(0, -hh-0.5), UP_ONLY));
 	solidTriggers.push_back(new OffsetTrigger(new CollisionInfo(), new AABB(0.5, hh-off), FOOT, this, Vector(-hw-0.5, 0), LEFT_ONLY));
 	solidTriggers.push_back(new OffsetTrigger(new CollisionInfo(), new AABB(hw-off, 0.5), FOOT, this, Vector(0, hh+0.5), DOWN_ONLY));
-	velocity=Vector(0, -6);
+	velocity=Vector(6, -6);
 }
 
 
 void Player::GeneralUpdate() {
 	grounded = solidTriggers[3]->cstorage.y<=-1;
-	if (game->interface->horizInput!=0) {
-		facing = game->interface->horizInput;
-	}
 	PhysicsObject::GeneralUpdate();
-	ChooseState();
-	ExecuteState();
-	velocity.x=gsp;
-	current->HFLIPPED=(facing==-1);
+	//ChooseState();
+	//ExecuteState();
 }
 
 Player::~Player() {
@@ -44,14 +39,15 @@ Player::~Player() {
 
 void Player::ChooseState() {
 	State choice = STANDING;
+	int direction = sign(game->interface->horizInput);
 	if (grounded) {
 		velocity.y=0;
 		if (game->interface->justJumping) {
 			velocity.y=-JumpVelocity();
 		}
-		if (game->interface->horizInput==0) choice = STANDING;
+		if (direction==0) choice = STANDING;
 		else {
-			if (gsp==0 || game->interface->horizInput==sign(gsp)) choice = RUNNING;
+			if (gsp==0 || direction==sign(gsp)) choice = RUNNING;
 			else choice = BRAKING;
 		}
 	}
@@ -70,17 +66,16 @@ void Player::ExecuteState() {
 		}
 	}
 	else if (state==RUNNING) {
-		if (std::abs(gsp)<TopSpeed()) gsp += game->interface->horizInput*Accel();
+		if (std::abs(gsp)<TopSpeed()) gsp += sign(gsp)*Accel();
 	}
-	else if (state==BRAKING) gsp += game->interface->horizInput*Decel();
+	else if (state==BRAKING) gsp -= sign(gsp)*Decel();
 	else if (state==JUMPING || state==FALLING) {
-		velocity=velocity+Gravity();
-		if (velocity.y>TerminalVel()) velocity.y=TerminalVel();
-		if (game->interface->horizInput!=0 && game->interface->horizInput==sign(gsp)) {
-			gsp+=game->interface->horizInput*AirAccel();
+		if (velocity.y<TerminalVel()) velocity=velocity+Gravity();
+		if (facing!=0 && facing==sign(gsp)) {
+			gsp+=sign(gsp)*AirAccel();
 		}
-		else if (game->interface->horizInput!=sign(gsp) && gsp!=0) {
-			gsp+=game->interface->horizInput*AirDecel();
+		else if (facing!=sign(gsp) && gsp!=0) {
+			gsp-=sign(gsp)*AirDecel();
 		}
 	}
 }

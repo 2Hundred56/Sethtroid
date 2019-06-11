@@ -44,7 +44,7 @@ void CollisionManager::UpdateGrid() {
 }
 
 Vector CollisionManager::CheckCollision(Shape* s1, Vector p1, Shape* s2, Vector p2, int cflag) {
-	//std::cout<<s1->ContainBox(p1)<<s2->ContainBox(Vector(p2))<<cflag<<":"<<std::flush;
+	std::cout<<s1->ContainBox(Vector(0, 0))<<p1<<s2->ContainBox(Vector(0, 0))<<p2<<cflag<<":"<<std::flush;
 	std::set<Vector> axes = s1->Axes(p2-p1);
 	std::set<Vector> axes2 = s2->Axes(p1-p2);
 	auto it = axes2.begin();
@@ -61,7 +61,7 @@ Vector CollisionManager::CheckCollision(Shape* s1, Vector p1, Shape* s2, Vector 
 		Vector proj2 = s2->Proj(axis)+Vector(proj(p2, axis),proj(p2, axis));
 		maxSep = proj1.y-proj1.x+proj2.y-proj2.x; //maximum possible separation
 		sep=std::max(proj1.y, proj2.y)-std::min(proj1.x, proj2.x);
-		//std::cout<<"{"<<axis<<":"<<proj1<<";"<<proj2<<","<<sep<<"-"<<maxSep<<"}"<<std::flush;
+		std::cout<<"{"<<axis<<":"<<proj1<<";"<<proj2<<","<<sep<<"-"<<maxSep<<"}"<<std::flush;
 		if (sep>=maxSep) return Vector(0, 0);
 		sgn=sign(proj1.x-proj2.x+proj1.y-proj2.y);
 		if (sgn<0) diff = (proj1.y-proj2.x);
@@ -71,11 +71,17 @@ Vector CollisionManager::CheckCollision(Shape* s1, Vector p1, Shape* s2, Vector 
 		if (std::abs(axis.x)==1) { //We know it's normalized, so no need testing y coord
 			//TODO: This code probably could be cleaned up
 			if ((cflag&NO_LEFT) && (cflag&NO_RIGHT)) continue;
-			if (((cflag&NO_LEFT) && sgn>0) || ((cflag&NO_RIGHT) && sgn<0)) continue;
+			if (((cflag&NO_LEFT) && sgn>0) || ((cflag&NO_RIGHT) && sgn<0)){
+				sgn*=-1;
+				diff+=(proj2.y-proj2.x); //At this point, this (very high) distance probably won't be chosen, but we might as well have it as an option
+			}
 		}
 		else if (std::abs(axis.y)==1) { //Can you tell this was copied and pasted?
 			if ((cflag&NO_UP) && (cflag&NO_DOWN)) continue;
-			if (((cflag&NO_UP) && sgn>0) || ((cflag&NO_DOWN) && sgn<0)) continue;
+			if (((cflag&NO_UP) && sgn>0) || ((cflag&NO_DOWN) && sgn<0)){
+				sgn*=-1;
+				diff+=(proj2.y-proj2.x);
+			}
 		}
 		else {
 			if (cflag&NO_WEIRD) continue;
@@ -85,7 +91,7 @@ Vector CollisionManager::CheckCollision(Shape* s1, Vector p1, Shape* s2, Vector 
 			maxAxis=axis;
 		}
 	}
-	//std::cout<<"/"<<maxAxis*minDst<<"\n"<<std::flush;
+	std::cout<<"/"<<maxAxis*minDst<<"\n"<<std::flush;
 	return maxAxis*minDst;
 }
 

@@ -44,7 +44,6 @@ public:
 	virtual float TerminalVel() = 0;
 	void ChangeState(State newState);
 	float gsp = 0;
-	float direction = 1;
 protected:
 	Animation* standing = NULL;
 	Animation* running = NULL;

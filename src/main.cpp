@@ -27,7 +27,7 @@ int main( int argc, char* args[] )
 	while (true) {
 		dt = ((fsec) (t1 - t0)).count();
 		overflow+=dt;
-		if (overflow>(1.0/60.0)) {
+		if (overflow>(1.0/2.0)) {
 			if (!game->Update()) break;
 			overflow=0;
 		}

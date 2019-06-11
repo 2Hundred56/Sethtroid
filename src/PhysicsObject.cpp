@@ -16,7 +16,7 @@ PhysicsObject::~PhysicsObject() {
 	// TODO Auto-generated destructor stub
 }
 
-void PhysicsObject::LateUpdate() {
+void PhysicsObject::InitialUpdate() {
 	pos+=velocity;
 }
 
@@ -42,13 +42,7 @@ void PhysicsObject::CollisionPoll() {
 	//std::cout<<"---\n"<<std::flush;
 }
 void PhysicsObject::GeneralUpdate() {
-	/*if (displacement.x!=0) {
-		game->paused=true;
-		return;
-	}*/
 	pos+=displacement - Vector(sign(displacement.x), sign(displacement.y));
-	if (sign(displacement.x)==-sign(velocity.x)) velocity.x=0;
-	if (sign(displacement.y)==-sign(velocity.y)) velocity.y=0;
-	//if (displacement.x!=0) velocity.x*=-1;
-	//if (displacement.y!=0) velocity.y*=-1;
+	if (displacement.x!=0) velocity.x*=-1;
+	if (displacement.y!=0) velocity.y*=-1;
 }
