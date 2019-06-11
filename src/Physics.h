@@ -25,6 +25,7 @@ const int UP_ONLY = NO_LEFT | NO_RIGHT | NO_DOWN | NO_WEIRD;
 const int LEFT_ONLY = NO_UP | NO_RIGHT | NO_DOWN | NO_WEIRD;
 const int RIGHT_ONLY = NO_LEFT | NO_UP | NO_DOWN | NO_WEIRD;
 const int DOWN_ONLY = NO_LEFT | NO_RIGHT | NO_UP | NO_WEIRD;
+const int BAD_FLAG = NO_LEFT | NO_RIGHT | NO_DOWN | NO_UP | NO_WEIRD;
 
 struct Vector {
 	float x, y;

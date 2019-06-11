@@ -21,7 +21,6 @@ public:
 	}
 	bool IsRunning() {return game->interface->isRunning;}
 	Vector Gravity() {
-		return Vector(0, 0.9);
 		if (game->interface->isJumping) {
 			if (std::abs(gsp)<1) return Vector(0, 0.125);
 			if (std::abs(gsp)<2.5) return Vector(0, 0.1171875);
