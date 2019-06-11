@@ -23,7 +23,7 @@ class PhysicsObject: public virtual GameObject {
 public:
 	PhysicsObject(Game* game);
 	virtual ~PhysicsObject();
-	virtual void InitialUpdate();
+	virtual void LateUpdate();
 	virtual void CollisionPoll();
 	virtual void GeneralUpdate();
 protected:
