@@ -25,6 +25,11 @@ std::ostream& operator <<(std::ostream& out, Vector v) {
 	return out;
 }
 
+std::ostream& operator <<(std::ostream& out, Rect r) {
+	out<<"["<<r.x<<","<<r.y<<","<<r.w<<","<<r.h<<"]";
+	return out;
+}
+
 Vector operator -(Vector v1, Vector v2) {
 	return Vector(v1.x-v2.x, v1.y-v2.y);
 }

@@ -18,6 +18,7 @@ enum State {
 class Player: public PhysicsObject {
 public:
 	Player(Game* game);
+	virtual void LoadResources();
 	virtual void GeneralUpdate();
 	virtual ~Player();
 	bool grounded=false;
@@ -29,38 +30,19 @@ public:
 	virtual float AirDecel() = 0;
 	virtual float Friction() = 0;
 	virtual float JumpVelocity() = 0;
+	virtual void ChooseState();
+	virtual void ExecuteState();
+	virtual void EnterState(State);
+	virtual void ExitState(State);
 	virtual void Render() {
 		Vector choice = pos-Vector(current->GetWidth()/2.0, current->GetHeight()/2.0);
 		game->interface->BlitSprite(current, (int) choice.x, (int) choice.y);
+		for (auto it = solidTriggers.begin(); it!=solidTriggers.end(); it++) {
+			game->interface->MassWrite(255<<16+255, (*it)->shape->ContainBox((*it)->GetPos()));
+		}
 	}
 	virtual float TerminalVel() = 0;
-	void ChangeState(State newState) {
-		if (state==newState) return;
-		state=newState;
-		Animation* anim;
-		switch (state) {
-			case STANDING:
-				anim=standing;
-				break;
-			case RUNNING:
-				anim=running;
-				break;
-			case BRAKING:
-				anim=braking;
-				break;
-			case JUMPING:
-				anim=jumping;
-				break;
-			case FALLING:
-				anim=falling;
-				break;
-			default:
-				anim=current;
-				break;
-		}
-		anim->index=0;
-		current=anim;
-	}
+	void ChangeState(State newState);
 	float gsp = 0;
 protected:
 	Animation* standing = NULL;
@@ -69,6 +51,7 @@ protected:
 	Animation* jumping = NULL;
 	Animation* falling = NULL;
 	Animation* current = NULL;
+	CollisionTrigger* trigger;
 	State state = STANDING;
 };
 

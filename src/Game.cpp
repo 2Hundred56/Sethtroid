@@ -10,7 +10,6 @@
 #include <iostream>
 
 #include "smb1/Mario.h"
-#include "smb1/Goomba.h"
 Game::Game() {
 }
 
@@ -29,7 +28,7 @@ int Game::Initialize() {
 	Tileset* set = interface->LoadTileset("rsrc/smb1/simple-tileset.bin");
 	layers.push_back(new TileLayer(100, 100, 16));
 	layers[0]->setTileset(1, set);
-	layers[0]->setTile(6, 8, 1, 0);
+	//layers[0]->setTile(6, 8, 1, 0);
 	layers[0]->setTile(7, 8, 1, 0);
 	layers[0]->setTile(8, 8, 1, 0);
 	layers[0]->setTile(9, 8, 1, 0);
@@ -41,9 +40,15 @@ int Game::Initialize() {
 	for (int i=4; i<28; i++) {
 		layers[0]->setTile(i, 12, 1, 0);
 	}
-	for (int i=15; i<20; i++) {
+	for (int i=14; i<20; i++) {
 			layers[0]->setTile(i, 8, 1, 0);
-		}
+	}
+	for (int i=3; i<20; i++) {
+		layers[0]->setTile(i, 3, 1, 0);
+	}
+	for (int i=3; i<12; i++) {
+		layers[0]->setTile(3, i, 1, 0);
+	}
 	layers[0]->setTile(20, 8, 1, 0);
 	layers[0]->setTile(20, 7, 1, 0);
 	manager->AddLayer(layers[0]);
@@ -51,7 +56,7 @@ int Game::Initialize() {
 	//gameObjects.push_front(new smb1::Goomba(this));
 	//gameObjects.front()->pos=Vector(256, 100);
 	gameObjects.push_front(new smb1::Mario(this));
-	gameObjects.front()->pos=Vector(100,100);
+	gameObjects.front()->pos=Vector(196,140);
 	for (auto it = gameObjects.begin(); it!=gameObjects.end(); it++) {
 		(*it)->LoadResources();
 	}

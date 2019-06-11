@@ -16,7 +16,7 @@ public:
 	virtual ~CollisionManager();
 	void AddTrigger(CollisionTrigger*);
 	void UpdateGrid();
-	Vector CheckCollision(Shape*, Vector, Shape*, Vector);
+	Vector CheckCollision(Shape*, Vector, Shape*, Vector, int cflag);
 	std::forward_list<Collision> GetCollisions(CollisionTrigger*, int);
 //protected:
 	std::forward_list<CollisionTrigger*> triggers;

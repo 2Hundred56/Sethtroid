@@ -14,6 +14,18 @@ const int SOLID = 1;
 const int FOOT = 2;
 const int HIT = 4;
 const int TRIGGER = 8;
+
+const int NO_UP = 1;
+const int NO_LEFT = 2;
+const int NO_RIGHT = 4;
+const int NO_DOWN = 8;
+const int NO_WEIRD = 16;
+
+const int UP_ONLY = NO_LEFT | NO_RIGHT | NO_DOWN | NO_WEIRD;
+const int LEFT_ONLY = NO_UP | NO_RIGHT | NO_DOWN | NO_WEIRD;
+const int RIGHT_ONLY = NO_LEFT | NO_UP | NO_DOWN | NO_WEIRD;
+const int DOWN_ONLY = NO_LEFT | NO_RIGHT | NO_UP | NO_WEIRD;
+
 struct Vector {
 	float x, y;
 	Vector(float x, float y) : x(x), y(y) {
@@ -51,6 +63,8 @@ struct Rect {
 
 	}
 };
+
+std::ostream& operator<<(std::ostream&, Rect);
 
 class Shape {
 public:
@@ -97,12 +111,16 @@ struct CollisionInfo {
 class CollisionTrigger {
 public:
 	int id = 0;
-	Vector pos;
+	int cflag;
 	CollisionInfo* info;
 	int flag;
 	Shape* shape;
-	CollisionTrigger(CollisionInfo* info, Shape* shape, int flag): info(info), flag(flag), shape(shape) {
+	CollisionTrigger(CollisionInfo* info, Shape* shape, int flag, int cflag = 0): info(info), flag(flag), shape(shape), cflag(cflag) {
 	}
+	virtual const Vector GetPos() const { return pos; }
+	void SetPos(const Vector pos) { this->pos = pos; }
+protected:
+	Vector pos;
 };
 
 int sign(float f);

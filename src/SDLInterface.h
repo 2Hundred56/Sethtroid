@@ -8,6 +8,7 @@
 #ifndef SDLINTERFACE_H_
 #define SDLINTERFACE_H_
 #include "SDL2/SDL.h"
+#include "Physics.h"
 #include "Tileset.h"
 #include "Layer.h"
 #include "AnimationResource.h"
@@ -22,6 +23,7 @@ public:
 	virtual bool EventPoll();
 	virtual int CloseGraphics();
 	virtual void WritePixel(unsigned int data, int x, int y);
+	virtual void MassWrite(unsigned int data, Rect r);
 	virtual void UpdateGraphics();
 	virtual void BlitSprite(Sprite* sprite, int x, int y);
 	virtual void BlitLayer(Layer*, int offsetx=0, int offsety=0);

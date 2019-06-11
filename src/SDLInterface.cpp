@@ -321,6 +321,14 @@ AnimationResource* SDLInterface::LoadAnim(char* path) {
 	return anim;
 }
 
+void SDLInterface::MassWrite(unsigned int data, Rect r) {
+	for (int i = r.x; i < (r.x+r.w); i++) {
+		for (int j = r.y; j < (r.y+r.h); j++) {
+			WritePixel(data, i, j);
+		}
+	}
+}
+
 Tileset* SDLInterface::LoadTileset(char* path) {
 	char header[4];
 	char palette[4];

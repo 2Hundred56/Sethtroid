@@ -21,6 +21,7 @@ public:
 	}
 	bool IsRunning() {return game->interface->isRunning;}
 	Vector Gravity() {
+		return Vector(0, 0.9);
 		if (game->interface->isJumping) {
 			if (std::abs(gsp)<1) return Vector(0, 0.125);
 			if (std::abs(gsp)<2.5) return Vector(0, 0.1171875);
@@ -72,8 +73,9 @@ public:
 		falling = new Animation(game->interface->LoadAnim("rsrc/smb1/mario/mario-jump.bin"));
 		running = new Animation(game->interface->LoadAnim("rsrc/smb1/mario/mario-run.bin"));
 		braking = new Animation(game->interface->LoadAnim("rsrc/smb1/mario/mario-brake.bin"));
-		trigger = new CollisionTrigger(new CollisionInfo(), new AABB(9, 9), FOOT|HIT);
+		trigger = new CollisionTrigger(new CollisionInfo(), new AABB(8, 8), FOOT|HIT);
 		current = standing;
+		Player::LoadResources();
 	}
 };
 
