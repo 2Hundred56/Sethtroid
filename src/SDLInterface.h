@@ -1,51 +1,52 @@
 /*
  * SDLInterface.h
  *
- *  Created on: May 31, 2019
+ *  Created on: Jun 14, 2019
  *      Author: triforce
  */
 
 #ifndef SDLINTERFACE_H_
 #define SDLINTERFACE_H_
-#include "SDL2/SDL.h"
-#include "Physics.h"
-#include "Tileset.h"
-#include "Layer.h"
-#include "AnimationResource.h"
+
+#include "InputTerms.h"
 #include <map>
 #include <string>
 
-class SDLInterface{
+class Tileset;
+class Animation;
+class Game;
+class Sprite;
+class SDL_Texture;
+class SDL_Renderer;
+class SDL_Window;
+
+class SDLInterface {
 public:
-	SDLInterface();
+	SDLInterface(Game*, int width, float resolution);
 	virtual ~SDLInterface();
 	virtual int InitGraphics();
-	virtual bool EventPoll();
 	virtual int CloseGraphics();
+	virtual InputState EventPoll();
 	virtual void WritePixel(unsigned int data, int x, int y);
-	virtual void MassWrite(unsigned int data, Rect r);
+	virtual void BeginGraphics();
 	virtual void UpdateGraphics();
-	virtual void BlitSprite(Sprite* sprite, int x, int y);
-	virtual void BlitLayer(Layer*, int offsetx=0, int offsety=0);
-	virtual Sprite* _loadImage(char*);
-	virtual Sprite* _loadSprite(char*);
-	void _exportSprite(char* path, Sprite* sprite);
-	float horizInput;
-	bool isJumping;
-	bool justJumping;
-	bool isRunning;
-	void _WriteAnimation(char* path, AnimationResource* animation);
-	AnimationResource* _ImportAnimation(char* path, std::forward_list<int> widths, int interval);
-	AnimationResource* LoadAnim(char* path);
-	Tileset* LoadTileset(char* path);
+	Animation* LoadAnimation(char* path, char* key);
+	Tileset* LoadTileset(char* path, char* key);
+	Sprite* LoadSprite(char* path, char* key);
+	Animation* GetAnimation(char* key);
+	Tileset* GetTileset(char* key);
 protected:
 	SDL_Texture* screenTexture;
 	SDL_Renderer* renderer;
 	SDL_Window* window;
-	std::map<std::string, AnimationResource*> anims;
+	int width, height;
+	float resolution;
+	Game* game;
+	std::map<std::string, Animation*> anims;
 	std::map<std::string, Tileset*> sets;
 	unsigned int * pixels;
-
 };
+
+
 
 #endif /* SDLINTERFACE_H_ */

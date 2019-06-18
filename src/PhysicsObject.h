@@ -8,6 +8,8 @@
 #ifndef PHYSICSOBJECT_H_
 #define PHYSICSOBJECT_H_
 
+#include <vector>
+
 #include "GameObject.h"
 #include "Physics.h"
 class OffsetTrigger : public CollisionTrigger {
@@ -17,20 +19,21 @@ public:
 	Vector offset;
 	Vector cstorage;
 	GameObject* obj;
-	const Vector GetPos() const { return obj->pos+offset;}
+	const Vector GetPos() const { return obj->GetPos()+offset;}
 };
 class PhysicsObject: public virtual GameObject {
 public:
-	PhysicsObject(Game* game);
+	PhysicsObject(Game* game, LoadingData data);
 	virtual ~PhysicsObject();
-	virtual void LateUpdate();
+	virtual void InitialUpdate();
 	virtual void CollisionPoll();
 	virtual void GeneralUpdate();
+	virtual void Initialize();
+	virtual std::vector<OffsetTrigger*> SolidTriggers() = 0;
 protected:
-	int facing = 1;
 	Vector velocity;
 	Vector displacement;
-	std::vector<OffsetTrigger*> solidTriggers; //MAKE SURE YOU INITIALIZE THESE!
+	int solidFlag = SOLID;
 };
 
-#endif /* PHYSICSOBJECT_H_ */
+#endif /* OLDSRC_PHYSICSOBJECT_H_ */

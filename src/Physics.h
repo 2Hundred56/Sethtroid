@@ -14,6 +14,7 @@ const int SOLID = 1;
 const int FOOT = 2;
 const int HIT = 4;
 const int TRIGGER = 8;
+const int ENEMY_FRIEND = 16;
 
 const int NO_UP = 1;
 const int NO_LEFT = 2;
@@ -26,7 +27,9 @@ const int LEFT_ONLY = NO_UP | NO_RIGHT | NO_DOWN | NO_WEIRD;
 const int RIGHT_ONLY = NO_LEFT | NO_UP | NO_DOWN | NO_WEIRD;
 const int DOWN_ONLY = NO_LEFT | NO_RIGHT | NO_UP | NO_WEIRD;
 const int BAD_FLAG = NO_LEFT | NO_RIGHT | NO_DOWN | NO_UP | NO_WEIRD;
-
+enum DamageType {
+	BLUNT, SPIKE
+};
 struct Vector {
 	float x, y;
 	Vector(float x, float y) : x(x), y(y) {
@@ -63,9 +66,15 @@ struct Rect {
 	Rect(float x, float y, float w, float h) : x(x), y(y), w(w), h(h) {
 
 	}
+	Rect() : x(0), y(0), w(0), h(0) {
+
+	}
 };
 
 std::ostream& operator<<(std::ostream&, Rect);
+Rect operator+(Rect r, Vector v);
+
+bool RectOverlap(Rect r1, Rect r2);
 
 class Shape {
 public:
@@ -74,7 +83,7 @@ public:
 	}
 	virtual std::set<Vector> Axes (Vector) = 0;
 	virtual Vector Proj(Vector axis) = 0;
-	virtual Rect ContainBox(Vector pos) = 0;
+	virtual Rect ContainBox() = 0;
 };
 
 class AABB : public Shape {
@@ -98,15 +107,28 @@ public:
 		float min = std::min(std::min(p1, p2), std::min(p3, p4));
 		return Vector(min, max);
 	}
-	Rect ContainBox(Vector pos) {
-		return Rect(pos.x-hw, pos.y-hh, hw*2, hh*2);
+	Rect ContainBox() {
+		return Rect(-hw, -hh, hw*2, hh*2);
 	}
 };
-
-struct CollisionInfo {
-	CollisionInfo() {
+class GameObject;
+class CollisionInfo {
+public:
+	virtual void ReceiveDamage(float dmg, Vector axis, DamageType type, GameObject* source) {
 
 	}
+	virtual ~CollisionInfo() {
+
+	}
+};
+class ObjectInfo : public CollisionInfo {
+public:
+	ObjectInfo(GameObject* obj) : obj(obj){
+
+	}
+	GameObject* obj;
+	void ReceiveDamage(float dmg, Vector axis, DamageType type,
+			GameObject* source);
 };
 
 class CollisionTrigger {
@@ -135,7 +157,5 @@ struct Collision {
 
 	}
 };
-
-
 
 #endif /* PHYSICS_H_ */

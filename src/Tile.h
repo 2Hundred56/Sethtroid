@@ -1,7 +1,7 @@
 /*
  * Tile.h
  *
- *  Created on: Jun 1, 2019
+ *  Created on: Jun 14, 2019
  *      Author: triforce
  */
 
@@ -10,8 +10,11 @@
 #include "Physics.h"
 class Tile {
 public:
-	Tile(int, int, Shape*, int flag, CollisionInfo* info, int cflag = 0);
-	virtual ~Tile();
+	Tile(int ox, int oy, Shape* shape, int flag, CollisionInfo* info,
+			int cflag = 0);
+	virtual ~Tile() {
+
+	}
 	int originX, originY;
 	Shape* shape;
 	CollisionInfo* info;

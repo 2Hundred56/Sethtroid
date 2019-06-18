@@ -7,13 +7,18 @@
 
 #ifndef LAYER_H_
 #define LAYER_H_
-
+class Game;
 class Layer {
 public:
+	Layer(Game* game) : game(game) {
+
+	}
 	virtual ~Layer() {
 
 	}
-	virtual unsigned int PixelAt(int, int) = 0;
+	virtual void Render() = 0;
+protected:
+	Game* game;
 };
 
-#endif /* LAYER_H_ */
+#endif

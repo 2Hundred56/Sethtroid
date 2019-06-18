@@ -1,36 +1,36 @@
 /*
  * CollisionManager.h
  *
- *  Created on: Jun 3, 2019
+ *  Created on: Jun 14, 2019
  *      Author: triforce
  */
 
 #ifndef COLLISIONMANAGER_H_
 #define COLLISIONMANAGER_H_
 #include "Physics.h"
-#include "TileLayer.h"
 #include <forward_list>
+#include <vector>
+class Game;
+class TileLayer;
 class CollisionManager {
 public:
-	CollisionManager(int, int);
+	CollisionManager(Game* game, TileLayer* layer = 0);
 	virtual ~CollisionManager();
-	void AddTrigger(CollisionTrigger*);
+	void AddTrigger(CollisionTrigger* trigger);
+	void RemoveTrigger(CollisionTrigger* trigger);
 	void UpdateGrid();
+	void Reset();
 	Vector CheckCollision(Shape*, Vector, Shape*, Vector, int cflag);
-	std::forward_list<Collision> GetCollisions(CollisionTrigger*, int);
-//protected:
-	std::forward_list<CollisionTrigger*> triggers;
-	void AddLayer(TileLayer* layer) {
-		tileLayers.push_front(layer);
-	}
+	std::forward_list<Collision> GetCollisions(CollisionTrigger* trigger, int flag);
 protected:
-	int nextID;
-	int width, height;
+	Game* game;
+	TileLayer* layer;
+	std::vector<CollisionTrigger*> triggers;
 	std::forward_list<CollisionTrigger*>** tileGrid;
-	std::forward_list<TileLayer*> tileLayers;
 	int tileSize = 32;
-	int tilingFlag = SOLID;
-
+	int width = 0;
+	int height = 0;
+	int tilingFlag = SOLID | HIT | ENEMY_FRIEND;
 };
 
 #endif /* COLLISIONMANAGER_H_ */

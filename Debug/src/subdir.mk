@@ -6,11 +6,12 @@
 CPP_SRCS += \
 ../src/CollisionManager.cpp \
 ../src/Game.cpp \
+../src/LivingObject.cpp \
+../src/Loading.cpp \
 ../src/Physics.cpp \
 ../src/PhysicsObject.cpp \
 ../src/Player.cpp \
 ../src/SDLInterface.cpp \
-../src/Sprite.cpp \
 ../src/Tile.cpp \
 ../src/TileLayer.cpp \
 ../src/Tileset.cpp \
@@ -19,11 +20,12 @@ CPP_SRCS += \
 OBJS += \
 ./src/CollisionManager.o \
 ./src/Game.o \
+./src/LivingObject.o \
+./src/Loading.o \
 ./src/Physics.o \
 ./src/PhysicsObject.o \
 ./src/Player.o \
 ./src/SDLInterface.o \
-./src/Sprite.o \
 ./src/Tile.o \
 ./src/TileLayer.o \
 ./src/Tileset.o \
@@ -32,11 +34,12 @@ OBJS += \
 CPP_DEPS += \
 ./src/CollisionManager.d \
 ./src/Game.d \
+./src/LivingObject.d \
+./src/Loading.d \
 ./src/Physics.d \
 ./src/PhysicsObject.d \
 ./src/Player.d \
 ./src/SDLInterface.d \
-./src/Sprite.d \
 ./src/Tile.d \
 ./src/TileLayer.d \
 ./src/Tileset.d \

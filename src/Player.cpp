@@ -1,57 +1,62 @@
 /*
  * Player.cpp
  *
- *  Created on: Jun 5, 2019
+ *  Created on: Jun 14, 2019
  *      Author: triforce
  */
-
 #include "Player.h"
-#include <cmath>
-Player::Player(Game* game) : PhysicsObject(game) {
+#include "Game.h"
+#include "RenderingTerms.h"
+#include "Animation.h"
 
-}
-
-void Player::LoadResources() {
+void Player::Initialize() {
+	gsp=0;
+	facing=1;
+	direction=1;
+	state = STANDING;
 	//MAKE SURE YOU INITIALIZE YOUR TRIGGER FIRST!
-	//0 = Right, 1 = Up, 2 = Left, 3 = Down
-	Rect r = trigger->shape->ContainBox(Vector(0, 0));
+	Rect r = GetTrigger()->shape->ContainBox();
 	float hw = r.w/2;
 	float hh = r.h/2;
-	float off = 2;
-	solidTriggers.push_back(new OffsetTrigger(new CollisionInfo(), new AABB(0.5, hh-off), FOOT, this, Vector(hw+0.5, 0), RIGHT_ONLY));
-	solidTriggers.push_back(new OffsetTrigger(new CollisionInfo(), new AABB(hw-off, 0.5), FOOT, this, Vector(0, -hh-0.5), UP_ONLY));
-	solidTriggers.push_back(new OffsetTrigger(new CollisionInfo(), new AABB(0.5, hh-off), FOOT, this, Vector(-hw-0.5, 0), LEFT_ONLY));
-	solidTriggers.push_back(new OffsetTrigger(new CollisionInfo(), new AABB(hw-off, 0.5), FOOT, this, Vector(0, hh+0.5), DOWN_ONLY));
-	velocity=Vector(0, -6);
+	float off = 3;
+	solidTriggers.push_back(new OffsetTrigger(new ObjectInfo(this), new AABB(0.5, hh-off*2), FOOT, this, Vector(hw+0.5, 0), RIGHT_ONLY));
+	solidTriggers.push_back(new OffsetTrigger(new ObjectInfo(this), new AABB(hw-off, 0.5), FOOT, this, Vector(0, -hh-0.5), UP_ONLY));
+	solidTriggers.push_back(new OffsetTrigger(new ObjectInfo(this), new AABB(0.5, hh-off*2), FOOT, this, Vector(-hw-0.5, 0), LEFT_ONLY));
+	solidTriggers.push_back(new OffsetTrigger(new ObjectInfo(this), new AABB(hw-off, 0.5), FOOT, this, Vector(0, hh+0.5), DOWN_ONLY));
+}
+
+Player::Player(Game* game, PlayerData data) : LivingObject(game, data){
+	playerNo=data.playerNo;
 }
 
 
 void Player::GeneralUpdate() {
-	grounded = solidTriggers[3]->cstorage.y<=-1;
-	if (game->interface->horizInput!=0) {
-		facing = game->interface->horizInput;
+	if (game->InputX(playerNo, which)!=0) {
+		facing = game->InputX(playerNo, which);
 	}
-	PhysicsObject::GeneralUpdate();
-	ChooseState();
-	ExecuteState();
+	if (facing==-1) {
+		renderData=RenderData(XFLIP);
+	}
+	else {
+		renderData=RenderData(NONE);
+	}
+	LivingObject::GeneralUpdate();
+	if (sign(displacement.x)==-sign(gsp)) gsp=0;
+	if (sign(displacement.y)==-sign(velocity.y)) velocity.y=0;
 	velocity.x=gsp;
-	current->HFLIPPED=(facing==-1);
-}
-
-Player::~Player() {
-	// TODO Auto-generated destructor stub
 }
 
 void Player::ChooseState() {
 	State choice = STANDING;
 	if (grounded) {
 		velocity.y=0;
-		if (game->interface->justJumping) {
-			velocity.y=-JumpVelocity();
+		if (game->InputA(playerNo, which)) {
+			velocity.y= - JumpVelocity();
+			choice = JUMPING;
 		}
-		if (game->interface->horizInput==0) choice = STANDING;
+		if (game->InputX(playerNo, which)==0) choice = STANDING;
 		else {
-			if (gsp==0 || game->interface->horizInput==sign(gsp)) choice = RUNNING;
+			if (gsp==0 || game->InputX(playerNo, which)==sign(gsp)) choice = RUNNING;
 			else choice = BRAKING;
 		}
 	}
@@ -70,49 +75,21 @@ void Player::ExecuteState() {
 		}
 	}
 	else if (state==RUNNING) {
-		if (std::abs(gsp)<TopSpeed()) gsp += game->interface->horizInput*Accel();
+		if (std::abs(gsp)<TopSpeed()) gsp += game->InputX(playerNo, which)*Accel();
 	}
-	else if (state==BRAKING) gsp += game->interface->horizInput*Decel();
+	else if (state==BRAKING) gsp += game->InputX(playerNo, which)*Decel();
 	else if (state==JUMPING || state==FALLING) {
-		velocity=velocity+Gravity();
-		if (velocity.y>TerminalVel()) velocity.y=TerminalVel();
-		if (game->interface->horizInput!=0 && game->interface->horizInput==sign(gsp)) {
-			gsp+=game->interface->horizInput*AirAccel();
+		if (game->InputX(playerNo, which)!=0 && (game->InputX(playerNo, which)==sign(gsp)|gsp==0) && std::abs(gsp)<TopSpeed()) {
+			gsp+=game->InputX(playerNo, which)*AirAccel();
 		}
-		else if (game->interface->horizInput!=sign(gsp) && gsp!=0) {
-			gsp+=game->interface->horizInput*AirDecel();
+		else if (game->InputX(playerNo, which)!=sign(gsp) && gsp!=0) {
+			gsp+=game->InputX(playerNo, which)*AirDecel();
 		}
 	}
+	LivingObject::ExecuteState();
 }
 
-void Player::ExitState(State oldState) {
-	//This function intentionally left blank
+
+Player::~Player() {
 }
 
-void Player::EnterState(State newState) {
-	switch (newState) {
-	case STANDING:
-		current=standing;
-		break;
-	case RUNNING:
-		current=running;
-		break;
-	case BRAKING:
-		current=braking;
-		break;
-	case JUMPING:
-		current=jumping;
-		break;
-	case FALLING:
-		current=falling;
-		break;
-	}
-	current->index=0;
-}
-
-void Player::ChangeState(State newState) {
-	if (state==newState) return;
-	ExitState(state);
-	EnterState(newState);
-	state=newState;
-}

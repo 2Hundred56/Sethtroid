@@ -1,50 +1,48 @@
 /*
  * CollisionManager.cpp
  *
- *  Created on: Jun 3, 2019
+ *  Created on: Jun 14, 2019
  *      Author: triforce
  */
 
 #include "CollisionManager.h"
-#include <set>
-#include <cmath>
+#include "Game.h"
+#include "Tile.h"
+#include "TileLayer.h"
 using CollisionTile = std::forward_list<CollisionTrigger*>;
-CollisionManager::CollisionManager(int w, int h) {
-	tileGrid = new CollisionTile*[w];
-	width=w;
-	height=h;
-	for (int i=0; i<width; i++) {
-		tileGrid[i]=new CollisionTile[h];
-	}
-	nextID=0;
+CollisionManager::CollisionManager(Game* game, TileLayer* layer) : game(game), layer(layer){
+
 }
 
 CollisionManager::~CollisionManager() {
+	// TODO Auto-generated destructor stub
 }
 
 void CollisionManager::AddTrigger(CollisionTrigger* trigger) {
-	trigger->id=nextID;
-	nextID++;
-	triggers.push_front(trigger);
+	trigger->id=triggers.size();
+	triggers.push_back(trigger);
 }
 
 void CollisionManager::UpdateGrid() {
+
+	width = (int) (game->DespawnZone().x+game->DespawnZone().w)-(int) (game->DespawnZone().x);
+	height = (int) (game->DespawnZone().y+game->DespawnZone().h)-(int) (game->DespawnZone().y);
+	int ox = (int) (game->DespawnZone().x);
+	int oy = (int) (game->DespawnZone().y);
+	tileGrid = new CollisionTile*[width];
 	for (int i=0; i<width; i++) {
-		for (int j=0; j<height; j++) {
-			tileGrid[i][j].clear();
-		}
+		tileGrid[i]=new CollisionTile[height];
 	}
 	CollisionTrigger* trigger;
 	for (auto it=triggers.begin(); it!=triggers.end(); it++) {
 		trigger = *it;
 		if (trigger->flag&tilingFlag) {
-			tileGrid[(int) trigger->GetPos().x/tileSize][(int) trigger->GetPos().y/tileSize].push_front(trigger);
+			tileGrid[(int) (trigger->GetPos().x/tileSize-ox)][(int) (trigger->GetPos().y/tileSize-oy)].push_front(trigger);
 		}
 	}
 }
 
 Vector CollisionManager::CheckCollision(Shape* s1, Vector p1, Shape* s2, Vector p2, int cflag) {
-	//std::cout<<s1->ContainBox(p1)<<s2->ContainBox(Vector(p2))<<cflag<<":"<<std::flush;
 	std::set<Vector> axes = s1->Axes(p2-p1);
 	std::set<Vector> axes2 = s2->Axes(p1-p2);
 	auto it = axes2.begin();
@@ -61,12 +59,10 @@ Vector CollisionManager::CheckCollision(Shape* s1, Vector p1, Shape* s2, Vector 
 		Vector proj2 = s2->Proj(axis)+Vector(proj(p2, axis),proj(p2, axis));
 		maxSep = proj1.y-proj1.x+proj2.y-proj2.x; //maximum possible separation
 		sep=std::max(proj1.y, proj2.y)-std::min(proj1.x, proj2.x);
-		//std::cout<<"{"<<axis<<":"<<proj1<<";"<<proj2<<","<<sep<<"-"<<maxSep<<"}"<<std::flush;
 		if (sep>=maxSep) return Vector(0, 0);
 		sgn=sign(proj1.x-proj2.x+proj1.y-proj2.y);
 		if (sgn<0) diff = (proj1.y-proj2.x);
 		else diff=(proj2.y-proj1.x);
-		//std::cout<<axis<<proj1<<"v"<<proj2<<":"<<std::flush;
 		//We know we have a collision, now to test cflags before we go
 		if (std::abs(axis.x)==1) { //We know it's normalized, so no need testing y coord
 			//TODO: This code probably could be cleaned up
@@ -85,33 +81,45 @@ Vector CollisionManager::CheckCollision(Shape* s1, Vector p1, Shape* s2, Vector 
 			maxAxis=axis;
 		}
 	}
-	//std::cout<<"/"<<maxAxis*minDst<<"\n"<<std::flush;
 	return maxAxis*minDst;
+}
+
+void CollisionManager::RemoveTrigger(CollisionTrigger* trigger) {
+	triggers.erase(triggers.begin()+trigger->id);
+	for (auto it = triggers.begin()+trigger->id; it!=triggers.end(); it++) {
+		(*it)->id++;
+	}
+}
+
+void CollisionManager::Reset() {
+	triggers.clear();
 }
 
 std::forward_list<Collision> CollisionManager::GetCollisions(
 		CollisionTrigger* trigger, int flag) {
+
 	std::forward_list<Collision> collisions;
-	TileLayer* layer;
 	Tile* tile;
 	Vector v;
-	Rect r = trigger->shape->ContainBox(trigger->GetPos());
-	int i1, i2, j1, j2, i, j;
-	for (auto it=tileLayers.begin(); it!=tileLayers.end(); it++) {
-		layer=*it;
-		i1 = (int) (r.x)/(layer->tileSize);
-		i2 = (int) (r.x+r.w)/(layer->tileSize);
-		j1 = (int) (r.y)/(layer->tileSize);
-		j2 = (int) (r.y+r.h)/(layer->tileSize);
+	int ox = (int) (game->DespawnZone().x);
+	int oy = (int) (game->DespawnZone().y);
+	int i, j;
+	if (layer!=0) {
+		Rect r = trigger->shape->ContainBox()+trigger->GetPos();
+		int i1, i2, j1, j2;
+		i1 = (int) (r.x)/(layer->TileSize());
+		i2 = (int) (r.x+r.w)/(layer->TileSize());
+		j1 = (int) (r.y)/(layer->TileSize());
+		j2 = (int) (r.y+r.h)/(layer->TileSize());
 		i = i1;
 		j = j1;
 		while (true) {
-			tile=layer->getTile(i, j);
+			tile=layer->GetTile(i, j);
 			if (tile!=0) {
 				if (tile->flag&flag) {
-					v=CheckCollision(trigger->shape, trigger->GetPos(), tile->shape, Vector((i+0.5)*layer->tileSize,(j+0.5)*layer->tileSize), (tile->cflag)|(trigger->cflag));
+					v=CheckCollision(trigger->shape, trigger->GetPos(), tile->shape, Vector((i+0.5)*layer->TileSize(),(j+0.5)*layer->TileSize()), (tile->cflag)|(trigger->cflag));
 					if (v.x!=0 || v.y!=0) {
-						collisions.push_front(Collision(tile->info, v, Vector((i+0.5)*layer->tileSize,(j+0.5)*layer->tileSize), tile->flag));
+						collisions.push_front(Collision(tile->info, v, Vector((i+0.5)*layer->TileSize(),(j+0.5)*layer->TileSize()), tile->flag));
 					}
 				}
 			}
@@ -124,14 +132,13 @@ std::forward_list<Collision> CollisionManager::GetCollisions(
 			if (j>j2) break;
 		}
 	}
-
-	for (i=(int) trigger->GetPos().x/tileSize-1; i<(int) trigger->GetPos().x/tileSize+1; i++) {
-		for (j=(int) trigger->GetPos().y/tileSize-1; j<(int) trigger->GetPos().y/tileSize+1; j++) {
+	for (i=(int) (trigger->GetPos().x-ox)/tileSize-1; i<(int) (trigger->GetPos().x-ox)/tileSize+1; i++) {
+		for (j=(int) (trigger->GetPos().y-oy)/tileSize-1; j<(int) (trigger->GetPos().y-oy)/tileSize+1; j++) {
+			if ((i<0) || (j<0) || (i>width) || (j>height)) continue;
 			CollisionTile tile = tileGrid[i][j];
-
 			for (auto it=tile.begin(); it!=tile.end(); it++) {
 				CollisionTrigger* other = *it;
-
+				if (!(other->flag&flag)) continue;
 				v=CheckCollision(trigger->shape, trigger->GetPos(), other->shape, other->GetPos(), (trigger->cflag)|(other->cflag));
 				if (v.x!=0 || v.y!=0) {
 					collisions.push_front(Collision(other->info, v, other->GetPos(), other->flag));
@@ -139,6 +146,5 @@ std::forward_list<Collision> CollisionManager::GetCollisions(
 			}
 		}
 	}
-
 	return collisions;
 }

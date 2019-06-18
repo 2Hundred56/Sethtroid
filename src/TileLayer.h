@@ -1,30 +1,34 @@
-#ifndef TILE_LAYER_H_
-#define TILE_LAYER_H_
-#include "Tileset.h"
+/*
+ * TileLayer.h
+ *
+ *  Created on: Jun 14, 2019
+ *      Author: triforce
+ */
+
+#ifndef TILELAYER_H_
+#define TILELAYER_H_
+
 #include "Layer.h"
-class TileLayer : public Layer {
+class Tileset;
+class Tile;
+
+class TileLayer: public Layer {
 public:
-	TileLayer(int w, int h, int ts);
+	TileLayer(Game* game, int w, int h, int tileSize);
 	virtual ~TileLayer();
-	unsigned int PixelAt(int x, int y);
-	void setTileset(int i, Tileset* tileset) { tilesets[i]=tileset; }
-	void setTile(int i, int j, int tileset, int tile) { tilesetData[i][j]=tileset; tileData[i][j]=tile; }
-	Tile* getTile(int i, int j) {
-		if (tilesetData[i][j]!=0){
-			return tilesets[tilesetData[i][j]]->GetTile(tileData[i][j]);
-		}
-		else {
-			return 0;
-		}
-	}
-	Tile* getTileWorld (float x, float y) {
-		return getTile((int) (x/tileSize), (int) (y/tileSize));
-	}
-	int tileSize;
+	void Render();
+	void SetTileset(int i, Tileset* tileset);
+	void SetTile(int i, int j, int tileset, int tile);
+	Tile* GetTile(int i, int j);
+	int GetTileNo(int i, int j);
+	Tileset* GetTileset(int i, int j);
+	int TileSize() const { return tileSize; }
 protected:
 	Tileset** tilesets;
 	char** tileData;
 	char** tilesetData;
 	int width, height;
+	int tileSize;
 };
-#endif
+
+#endif /* TILELAYER_H_ */

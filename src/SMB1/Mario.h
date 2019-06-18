@@ -1,27 +1,42 @@
 /*
  * Mario.h
  *
- *  Created on: Jun 6, 2019
+ *  Created on: Jun 14, 2019
  *      Author: triforce
  */
 
 #ifndef SMB1_MARIO_H_
 #define SMB1_MARIO_H_
-#include "../Player.h"
 #include <cmath>
+#include "../Player.h"
+#include <iostream>
+#include "../Game.h"
 namespace smb1 {
-
 class Mario: public Player {
 public:
-	Mario(Game* game) : GameObject(game), Player(game) {
+	Mario(Game* game, PlayerData data) : Player(game, data), GameObject(game, data) {
 
 	}
-	virtual ~Mario() {
-
+	CollisionTrigger* GetTrigger() {
+		return trigger;
 	}
-	bool IsRunning() {return game->interface->isRunning;}
+	bool IsRunning() {return game->InputB(playerNo, which);}
+	bool IsJumping() {return game->InputA(playerNo, which);}
+	void GeneralUpdate() {
+		Player::GeneralUpdate();
+		if (grounded) bounced = false;
+	}
+	void LoadResources() {
+		trigger=new OffsetTrigger(new ObjectInfo(this), new AABB(8, 8), HIT|FOOT, this, Vector(0, 0));
+		stateAnimations[RUNNING] = game->GetAnimation("SMB1-Mario-Run");
+		stateAnimations[BRAKING] = game->GetAnimation("SMB1-Mario-Brake");
+		stateAnimations[STANDING] = game->GetAnimation("SMB1-Mario-Idle");
+		stateAnimations[JUMPING] = game->GetAnimation("SMB1-Mario-Jump");
+		stateAnimations[FALLING] = game->GetAnimation("SMB1-Mario-Jump");
+		Player::LoadResources();
+	}
 	Vector Gravity() {
-		if (game->interface->isJumping) {
+		if (IsJumping() && !bounced) {
 			if (std::abs(gsp)<1) return Vector(0, 0.125);
 			if (std::abs(gsp)<2.5) return Vector(0, 0.1171875);
 			else return Vector(0, 0.15625);
@@ -66,18 +81,12 @@ public:
 		if (IsRunning()) return 0.0508422;
 		else return 0.0352783;
 	}
-	void LoadResources() {
-		standing = new Animation(game->interface->LoadAnim("rsrc/smb1/mario/mario-idle.bin"));
-		jumping = new Animation(game->interface->LoadAnim("rsrc/smb1/mario/mario-jump.bin"));
-		falling = new Animation(game->interface->LoadAnim("rsrc/smb1/mario/mario-jump.bin"));
-		running = new Animation(game->interface->LoadAnim("rsrc/smb1/mario/mario-run.bin"));
-		braking = new Animation(game->interface->LoadAnim("rsrc/smb1/mario/mario-brake.bin"));
-		trigger = new CollisionTrigger(new CollisionInfo(), new AABB(8, 8), FOOT|HIT);
-		current = standing;
-		Player::LoadResources();
-	}
+protected:
+	bool bounced=false;
+	CollisionTrigger* trigger;
 };
+}
 
-} /* namespace SMB1 */
+
 
 #endif /* SMB1_MARIO_H_ */
