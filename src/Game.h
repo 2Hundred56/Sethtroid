@@ -77,6 +77,7 @@ protected:
 	int screenWidth;
 	float screenResolution;
 	Vector worldSize;
+	float cameraZoom=1;
 };
 
 #endif /* GAME_H_ */

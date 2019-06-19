@@ -24,17 +24,18 @@ class SDLInterface {
 public:
 	SDLInterface(Game*, int width, float resolution);
 	virtual ~SDLInterface();
-	virtual int InitGraphics();
-	virtual int CloseGraphics();
-	virtual InputState EventPoll();
-	virtual void WritePixel(unsigned int data, int x, int y);
-	virtual void BeginGraphics();
-	virtual void UpdateGraphics();
+	int InitGraphics();
+	int CloseGraphics();
+	InputState EventPoll();
+	void WritePixel(unsigned int data, int x, int y);
+	void BeginGraphics();
+	void UpdateGraphics();
 	Animation* LoadAnimation(char* path, char* key);
 	Tileset* LoadTileset(char* path, char* key);
 	Sprite* LoadSprite(char* path, char* key);
 	Animation* GetAnimation(char* key);
 	Tileset* GetTileset(char* key);
+	void ConvertSprite(char* inPath, char* outPath);
 protected:
 	SDL_Texture* screenTexture;
 	SDL_Renderer* renderer;

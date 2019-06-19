@@ -7,10 +7,13 @@
 #include "Tileset.h"
 #include "Tile.h"
 
-Tileset::Tileset(int w, int h) {
+Tileset::Tileset(int w, int h, int np) {
 	width=w;
 	height=h;
-
+	palettes=new unsigned int[np];
+	tiles = new Tile*[255];
+	data = new char*[w];
+	for(int i = 0; i < w; ++i) data[i] = new char[h];
 }
 
 Tileset::~Tileset() {

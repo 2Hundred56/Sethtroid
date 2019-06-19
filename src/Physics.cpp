@@ -1,5 +1,6 @@
 #include "Physics.h"
 #include "GameObject.h"
+#include <cmath>
  void ObjectInfo::ReceiveDamage(float dmg, Vector axis, DamageType type,
 		GameObject* source) {
 	obj->ReceiveDamage(dmg, axis, type, source);
@@ -62,17 +63,9 @@ Rect operator +(Rect r, Vector v) {
 }
 
 bool RectOverlap(Rect r1, Rect r2) {
-	if ((r1.x + r1.w) < r2.x)
-		return false;
-
-	if ((r1.x) > (r2.x + r2.w))
-		return false;
-
-	if ((r1.y + r1.h) < r2.y)
-		return false;
-
-	if ((r1.y) > (r2.y + r2.h))
-		return false;
+	if ( std::abs((2*r1.x+r1.w) - (r2.x*2 + r2.w)) > (r1.w+r2.w) ) return false;
+	if ( std::abs((2*r1.y+r1.h) - (r2.y*2 + r2.h)) > (r1.h+r2.h) ) return false;
+	return true;
 }
 /*
  * Physics.cpp

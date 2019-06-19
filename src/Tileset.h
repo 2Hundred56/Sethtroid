@@ -8,10 +8,11 @@
 #ifndef TILESET_H_
 #define TILESET_H_
 #include "Sprite.h"
+#include <iostream>
 class Tile;
 class Tileset {
 public:
-	Tileset(int, int);
+	Tileset(int, int, int);
 	virtual ~Tileset();
 	unsigned int TilePixelAt(int tile, int x, int y);
 	Tile* GetTile(int i) const { return (tiles[i]); }

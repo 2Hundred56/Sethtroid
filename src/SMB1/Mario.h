@@ -36,6 +36,7 @@ public:
 		Player::LoadResources();
 	}
 	Vector Gravity() {
+		return Vector(0,0);
 		if (IsJumping() && !bounced) {
 			if (std::abs(gsp)<1) return Vector(0, 0.125);
 			if (std::abs(gsp)<2.5) return Vector(0, 0.1171875);

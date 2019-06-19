@@ -11,7 +11,36 @@
 #include <fstream>
 #include "Tileset.h"
 #include "Tile.h"
+#include <vector>
+unsigned int getpixel(SDL_Surface *surface, int x, int y)
+{
+    int bpp = surface->format->BytesPerPixel;
+    Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
 
+    switch(bpp) {
+    case 1:
+        return *p;
+        break;
+
+    case 2:
+        return *(Uint16 *)p;
+        break;
+
+    case 3:
+        if(SDL_BYTEORDER == SDL_BIG_ENDIAN)
+            return p[0] << 16 | p[1] << 8 | p[2];
+        else
+            return p[0] | p[1] << 8 | p[2] << 16;
+        break;
+
+    case 4:
+        return *(Uint32 *)p;
+        break;
+
+    default:
+        return 0;
+    }
+}
 SDLInterface::SDLInterface(Game* game, int w, float r) : game(game) {
 	resolution=r;
 	width=w;
@@ -45,6 +74,15 @@ int SDLInterface::InitGraphics() {
 }
 
 InputState SDLInterface::EventPoll() {
+	SDL_Event e;
+	SDL_PumpEvents();
+	InputState state = InputState();
+	while (SDL_PollEvent(&e)){
+		if (e.type == SDL_QUIT){
+			state.quit=true;
+		}
+	}
+	return state;
 }
 
 void SDLInterface::WritePixel(unsigned int data, int x, int y) {
@@ -56,14 +94,6 @@ void SDLInterface::WritePixel(unsigned int data, int x, int y) {
 }
 
 void SDLInterface::UpdateGraphics() {
-	width=game->Camera().w;
-	height=game->Camera().h;
-	pixels = new unsigned int[width * height];
-	for (int i=0; i<width; i++) {
-		for (int j=0; j<height; j++) {
-			pixels[width*j+i]=(255<<24);
-		}
-	}
 	SDL_UpdateTexture(screenTexture, NULL, pixels, width * sizeof(unsigned int));
 	SDL_RenderClear(renderer);
 	SDL_RenderCopy(renderer, screenTexture, NULL, NULL);
@@ -71,6 +101,7 @@ void SDLInterface::UpdateGraphics() {
 }
 
 Animation* SDLInterface::LoadAnimation(char* path, char* key) {
+	std::cout<<"Loading "<<key<<"..."<<std::flush;
 	char header[3];
 		char palette[4];
 		char smallHeader[2];
@@ -105,10 +136,12 @@ Animation* SDLInterface::LoadAnimation(char* path, char* key) {
 			anim->AddFrame(data, smallHeader[0], smallHeader[1]);
 		}
 		anims.insert(std::pair<std::string, Animation*>(key, anim));
+		std::cout<<"Done.\n"<<std::flush;
 		return anim;
 }
 
 Tileset* SDLInterface::LoadTileset(char* path, char* key) {
+	std::cout<<"Loading "<<key<<"..."<<std::flush;
 	char header[4];
 	char palette[4];
 	char buffer[1];
@@ -117,42 +150,54 @@ Tileset* SDLInterface::LoadTileset(char* path, char* key) {
 	if (it!=sets.end()) return it->second;
 	std::ifstream file (path, std::ios::in | std::ios::binary);
 	file.read(header, 4);
-	Tileset* tileset = new Tileset(header[0], header[1]);
+	Tileset* tileset = new Tileset(header[0], header[1], header[3]);
 	for (int i=0; i<header[3];i++) {
 		file.read(palette, 4);
 		tileset->SetPalette(i, (palette[0]<<24)+(palette[1]<<16)+(palette[2]<<8)+palette[3]);
 	}
 	char** data=new char*[header[0]];
+
 	for(int i = 0; i < header[0]; ++i) data[i] = new char[header[1]];
-	for (int i = 0; i <header[0]; i++) {
-		for (int j = 0; j<header[1]; j++) {
+	for (int j = 0; j<header[1]; j++) {
+		for (int i = 0; i <header[0]; i++) {
 			file.read(buffer, 1);
-			data[j][i]=buffer[0];
+			data[i][j]=buffer[0];
 		}
 	}
+
 	tileset->CopyData(data);
-
 	int k=0;
-
-	for (int i = 0; i<header[0]/header[2]; i++) {
-		for (int j = 0; j<header[1]/header[2]; j++) {
+	for (int j = 0; j<header[1]/header[2]; j++) {
+		for (int i = 0; i<header[0]/header[2]; i++) {
 			file.read(buffer, 1);
+
 			switch (buffer[0]) {
 			case 0:
-				tileset->tiles[k]=new Tile(i*header[2], j*header[2], new AABB(header[2]/2, header[2]/2), SOLID, new CollisionInfo());
-
+				tileset->tiles[k]=new Tile(i*header[2], j*header[2], new AABB(header[2]/2, header[2]/2), 0, new CollisionInfo());
 				k++;
 				break;
-			default: break;
+			case 1:
+				tileset->tiles[k]=new Tile(i*header[2], j*header[2], new AABB(header[2]/2, header[2]/2), SOLID, new CollisionInfo());
+				k++;
+				break;
+			default:
+				throw('a');
+				break;
 			}
 		}
 	}
+	std::cout<<"Done.\n"<<std::flush;
 	return tileset;
 }
 
 void SDLInterface::BeginGraphics() {
-	width=game->Camera().w;
-	height=game->Camera().h;
+	if (width!=game->Camera().w || height!=game->Camera().h) {
+		width=game->Camera().w;
+		height=game->Camera().h;
+		SDL_DestroyTexture(screenTexture);
+		screenTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, width, height);
+		if (screenTexture==NULL) throw(4);
+	}
 	pixels = new unsigned int[width * height];
 	for (int i=0; i<width; i++) {
 		for (int j=0; j<height; j++) {
@@ -171,4 +216,54 @@ Tileset* SDLInterface::GetTileset(char* key) {
 	auto it=sets.find(std::string(key));
 	if (it!=sets.end()) return it->second;
 	return 0;
+}
+
+void SDLInterface::ConvertSprite(char* inPath, char* outPath) {
+	SDL_Surface* surface = SDL_LoadBMP(inPath);
+	SDL_LockSurface(surface);
+	char buffer[1];
+	char palette[4];
+	char* data = new char[(surface->w)*(surface->h)];
+	std::vector<int> palettes;
+	int palettesSet=0;
+	for (int i=0; i<surface->w; i++) {
+		for (int j=0;j<surface->h; j++) {
+			unsigned int pixel = getpixel(surface, i, j);
+
+			for (int k=0; k<palettesSet+1; k++) {
+				if (k==palettesSet) {
+					palettes.push_back(pixel);
+					data[j*(surface->w)+i]=k;
+					palettesSet++;
+					break;
+				}
+				else {
+					if (palettes[k]==pixel) {
+						if (k==0) {
+							std::cout<<i<<","<<j<<"-"<<std::hex<<pixel<<std::dec<<"\n"<<std::flush;
+						}
+						data[j*(surface->w)+i]=k;
+						break;
+					}
+				}
+			}
+		}
+	}
+	std::ofstream file (outPath, std::ios::out | std::ios::binary);
+	buffer[0]=surface->w;
+	file.write(buffer, 1);
+	buffer[0]=surface->h;
+	file.write(buffer, 1);
+	buffer[0]=palettesSet;
+	file.write(buffer, 1);
+	for (int i=0; i<palettesSet; i++) {
+		int n = palettes[i];
+		palette[0] = (n >> 24) & 0xFF;
+		palette[1] = (n >> 16) & 0xFF;
+		palette[2] = (n >> 8) & 0xFF;
+		palette[3] = n & 0xFF;
+		file.write(palette, 4);
+	}
+	file.write(data, (surface->w)*(surface->h));
+
 }

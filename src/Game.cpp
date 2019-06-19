@@ -68,7 +68,7 @@ void Game::RenderAnimation(Animation* anim, Vector pos, int index, RenderData da
 	Vector animSize=Vector(anim->GetWidthI(index), anim->GetHeightI(index));
 	for (int i=0; i<animSize.x; i++) {
 		for (int j=0; j<animSize.y; j++) {
-			interface->WritePixel(i+pos.x-camera.x, j+pos.y-camera.y, anim->PixelAtI(index, i, j));
+			interface->WritePixel(anim->PixelAtI(index, i, j), i+pos.x-camera.x, j+pos.y-camera.y);
 		}
 	}
 }
@@ -85,14 +85,19 @@ void Game::AddLayer(Layer* layer) {
 
 bool Game::Update() {
 	input=interface->EventPoll();
+	if (input.quit) return false;
 	int flag;
 	//TODO: Update camera
-	camera=Rect(20, 20, 60, 60/screenResolution);
+	if (clock>500) {
+		cameraZoom*=1.005;
+	}
+	camera=Rect(20, 20, int(60*cameraZoom), int(60*cameraZoom)/screenResolution);
 	spawnZone = Rect(camera.x-spawnZoneOffset, camera.y-spawnZoneOffset, camera.w+spawnZoneOffset*2, camera.h+spawnZoneOffset*2);
 	despawnZone = Rect(camera.x-despawnZoneOffset, camera.y-despawnZoneOffset, camera.w+despawnZoneOffset*2, camera.h+despawnZoneOffset*2);
-
 	for (auto it = objects.begin(); it!=objects.end(); it++) {
+
 		flag = (*it) -> GetSpawnStatus();
+
 		if (flag==0) {
 			if (RectOverlap((*it)->LoadingRect(), spawnZone)) {
 				(*it)->SetSpawnStatus(1);
@@ -123,10 +128,7 @@ bool Game::Update() {
 		}
 
 	}
-
-
 	interface->BeginGraphics();
-
 	manager->UpdateGrid();
 	for (auto it = objects.begin(); it!=objects.end(); it++) if ((*it)->GetSpawnStatus()==1) (*it)->CollisionPoll();
 	for (auto it = objects.begin(); it!=objects.end(); it++) if ((*it)->GetSpawnStatus()==1) (*it)->GeneralUpdate();
@@ -134,5 +136,6 @@ bool Game::Update() {
 	for (auto it = objects.begin(); it!=objects.end(); it++) if ((*it)->GetSpawnStatus()==1) (*it)->Render();
 	interface->UpdateGraphics();
 	for (auto it = objects.begin(); it!=objects.end(); it++) if ((*it)->GetSpawnStatus()==1) (*it)->LateUpdate();
+	clock++;
 	return true;
 }
