@@ -6,6 +6,7 @@
  */
 #include "SDLInterface.h"
 #include "SDL2/SDL.h"
+#include "SDL2_image/IMG.h"
 #include "Game.h"
 #include "Animation.h"
 #include <fstream>

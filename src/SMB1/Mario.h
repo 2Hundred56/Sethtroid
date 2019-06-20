@@ -37,7 +37,7 @@ public:
 	}
 	Vector Gravity() {
 		return Vector(0,0);
-		if (IsJumping() && !bounced) {
+		if (IsJumping() && (velocity.y>0) && !bounced) {
 			if (std::abs(gsp)<1) return Vector(0, 0.125);
 			if (std::abs(gsp)<2.5) return Vector(0, 0.1171875);
 			else return Vector(0, 0.15625);
@@ -62,6 +62,9 @@ public:
 			return 0.035278;
 		}
 	}
+	float MinWalk() {
+		return 1.1875;
+	}
 	float Decel() {
 		return 0.101563;
 	}
@@ -81,6 +84,16 @@ public:
 	float AirDecel() {
 		if (IsRunning()) return 0.0508422;
 		else return 0.0352783;
+	}
+	void ReceiveDamage(float dmg, Vector axis, DamageType type, GameObject* source) {
+		if (axis.y>0) {
+			if (source!=0) source->ReceiveDamage(3, -axis, BLUNT, this);
+			bounced=true;
+			velocity.y=-4;
+		}
+		else {
+			Player::ReceiveDamage(dmg, axis, type, source);
+		}
 	}
 protected:
 	bool bounced=false;

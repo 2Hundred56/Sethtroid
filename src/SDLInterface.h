@@ -16,9 +16,9 @@ class Tileset;
 class Animation;
 class Game;
 class Sprite;
-class SDL_Texture;
-class SDL_Renderer;
-class SDL_Window;
+struct SDL_Texture;
+struct SDL_Renderer;
+struct SDL_Window;
 
 class SDLInterface {
 public:

@@ -31,6 +31,7 @@ Player::Player(Game* game, PlayerData data) : LivingObject(game, data){
 
 
 void Player::GeneralUpdate() {
+	if (invFrames>0) invFrames--;
 	if (game->InputX(playerNo, which)!=0) {
 		facing = game->InputX(playerNo, which);
 	}
@@ -67,6 +68,15 @@ void Player::ChooseState() {
 	ChangeState(choice);
 }
 
+void Player::ReceiveDamage(float dmg, Vector axis, DamageType type,
+		GameObject* source) {
+	if (invFrames>0) return;
+	else {
+		invFrames=InvincibleLength();
+		LivingObject::ReceiveDamage(dmg, axis, type, source);
+	}
+}
+
 void Player::ExecuteState() {
 	if (state==STANDING) {
 		if (gsp!=0) {
@@ -75,7 +85,12 @@ void Player::ExecuteState() {
 		}
 	}
 	else if (state==RUNNING) {
-		if (std::abs(gsp)<TopSpeed()) gsp += game->InputX(playerNo, which)*Accel();
+		if (gsp==0) {
+			gsp=game->InputX(playerNo, which)*MinWalk();
+		}
+		else {
+			if (std::abs(gsp)<TopSpeed()) gsp += game->InputX(playerNo, which)*Accel();
+		}
 	}
 	else if (state==BRAKING) gsp += game->InputX(playerNo, which)*Decel();
 	else if (state==JUMPING || state==FALLING) {
@@ -93,3 +108,6 @@ void Player::ExecuteState() {
 Player::~Player() {
 }
 
+void Player::Death() {
+	ChangeState(DYING);
+}

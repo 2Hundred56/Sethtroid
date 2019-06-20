@@ -30,7 +30,7 @@ protected:
 	int tileSize = 32;
 	int width = 0;
 	int height = 0;
-	int tilingFlag = SOLID | HIT | ENEMY_FRIEND;
+	int tilingFlag = SOLID | HIT | HIT2;
 };
 
 #endif /* COLLISIONMANAGER_H_ */

@@ -9,6 +9,7 @@ RM := rm -rf
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include src/subdir.mk
+-include lib/SDL2_image/subdir.mk
 -include subdir.mk
 -include objects.mk
 
@@ -43,8 +44,8 @@ all: Sethtroid
 # Tool invocations
 Sethtroid: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
-	@echo 'Invoking: MinGW C++ Linker'
-	g++  -o "Sethtroid" $(OBJS) $(USER_OBJS) $(LIBS)
+	@echo 'Invoking: MacOS X C++ Linker'
+	g++ -L"/Users/triforce/Eclipse/Sethtroid/lib/SDL2" -L"/Users/triforce/Eclipse/Sethtroid/lib/SDL2_image" -o "Sethtroid" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
