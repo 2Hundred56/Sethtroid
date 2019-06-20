@@ -34,10 +34,10 @@ public:
 	void AddLayer(Layer* layer);
 	Animation* GetAnimation(char* key);
 	void Close();
-	float InputX(int playerNo, int which) { return 0; };
+	float InputX(int playerNo, int which);
 	float InputY(int playerNo, int which);
-	float InputA(int playerNo, int which) { return 0; };
-	float InputB(int playerNo, int which) { return 0; };
+	float InputA(int playerNo, int which);
+	float InputB(int playerNo, int which);
 	float InputC(int playerNo, int which);
 	float InputD(int playerNo, int which);
 	float InputL(int playerNo, int which);

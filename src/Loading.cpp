@@ -12,7 +12,6 @@
 #include <iostream>
 void Game::LoadLevel(char* path, int chunk, int entranceData) {
 	std::cout<<"Loading level "<<path<<"...\n"<<std::flush;
-
 	std::ifstream file (path, std::ios::in | std::ios::binary);
 	std::cout<<"Loading header..."<<std::flush;
 	char buffer1[2];

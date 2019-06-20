@@ -2,3 +2,5 @@
 .settings/org.eclipse.cdt.managedbuilder.core.prefs
 .cproject
 .cproject
+*.d
+*.o

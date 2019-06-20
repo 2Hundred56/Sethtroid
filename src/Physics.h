@@ -13,8 +13,8 @@
 const int SOLID = 1;
 const int FOOT = 2;
 const int HIT = 4;
-const int TRIGGER = 8;
-const int ENEMY_FRIEND = 16;
+const int HIT2 = 8;
+const int TRIGGER = 16;
 
 const int NO_UP = 1;
 const int NO_LEFT = 2;
